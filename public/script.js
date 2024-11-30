@@ -96,12 +96,11 @@ function gameLoop() {
             break;
     }
 
-    // Проверка на столкновение с краем поля
-    if (head.x < 0 || head.x >= gameSize || head.y < 0 || head.y >= gameSize) {
-        alert('Game Over! Your score: ' + score);
-        resetGame();
-        return;
-    }
+    // Проверка на столкновение с границей (телепортация)
+    if (head.x < 0) head.x = gameSize - blockSize;
+    if (head.x >= gameSize) head.x = 0;
+    if (head.y < 0) head.y = gameSize - blockSize;
+    if (head.y >= gameSize) head.y = 0;
 
     // Проверка на столкновение с телом змейки
     for (let i = 0; i < snake.length; i++) {
