@@ -6,7 +6,7 @@
     margin: 20px auto;
     position: relative;
     background-color: #e0e0e0; /* Цвет фона игрового поля */
-    background-image: url('/gJoPr77TwBFKgAAAABJRU5ErkJggg.png'); /* Изображение фона */
+    background-image: url('https://imgur.com/a/ADq8yuf'); /* Изображение фона */
     background-size: cover; /* Подгоняет изображение, чтобы оно покрывало весь контейнер */
     background-repeat: no-repeat;
     background-position: center;
