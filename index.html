@@ -29,11 +29,35 @@
         button:hover {
             background-color: #33cc33;
         }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .direction-button {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            border: 2px solid #fff;
+            background-color: #444;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <canvas id="snakeGame"></canvas>
     <button id="restartGame" style="display: none;">Перезапустить игру</button>
+    <div class="controls">
+        <div class="direction-button" id="up">↑</div>
+        <div class="direction-button" id="left">←</div>
+        <div class="direction-button" id="down">↓</div>
+        <div class="direction-button" id="right">→</div>
+    </div>
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) tg.ready();
@@ -99,21 +123,17 @@
             }
         }
 
-        document.addEventListener("keydown", (e) => {
-            switch (e.key) {
-                case "ArrowUp":
-                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
-                    break;
-                case "ArrowDown":
-                    if (direction.y === 0) direction = { x: 0, y: gridSize };
-                    break;
-                case "ArrowLeft":
-                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
-                    break;
-                case "ArrowRight":
-                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
-                    break;
-            }
+        document.getElementById("up").addEventListener("click", () => {
+            if (direction.y === 0) direction = { x: 0, y: -gridSize };
+        });
+        document.getElementById("down").addEventListener("click", () => {
+            if (direction.y === 0) direction = { x: 0, y: gridSize };
+        });
+        document.getElementById("left").addEventListener("click", () => {
+            if (direction.x === 0) direction = { x: -gridSize, y: 0 };
+        });
+        document.getElementById("right").addEventListener("click", () => {
+            if (direction.x === 0) direction = { x: gridSize, y: 0 };
         });
 
         document.getElementById("restartGame").addEventListener("click", initializeGame);
