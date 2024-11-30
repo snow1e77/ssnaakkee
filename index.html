@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game with Background Image</title>
+    <title>Snake Game</title>
     <style>
         body {
             margin: 0;
@@ -15,20 +15,72 @@
         }
         canvas {
             border: 2px solid #fff;
-            background-image: url('gJoPr77TwBFKgAAAABJRU5ErkJggg.png'); /* Путь к изображению */
+            background-image: url('gJoPr77TwBFKgAAAABJRU5ErkJggg.png'); /* Укажите путь к изображению */
             background-size: cover;
             background-repeat: no-repeat;
         }
-        .score {
+        .score, .high-score {
             color: white;
             font-size: 24px;
             margin-bottom: 10px;
+        }
+        .leaderboard {
+            color: white;
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid white;
+            color: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="score" id="scoreDisplay">Счёт: 0</div>
+    <div class="high-score" id="highScoreDisplay">Лучший результат: 0</div>
     <canvas id="snakeGame" width="400" height="400"></canvas>
+    <div class="controls">
+        <button id="restartButton">Перезапустить игру</button>
+    </div>
+    <div class="leaderboard">
+        <h3>Таблица лидеров</h3>
+        <table id="leaderboard">
+            <thead>
+                <tr>
+                    <th>Место</th>
+                    <th>Игрок</th>
+                    <th>Счёт</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <script>
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
@@ -37,6 +89,8 @@
         let direction = { x: gridSize, y: 0 };
         let food = {};
         let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
+        let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
         let gameInterval;
 
         function initializeGame() {
@@ -46,7 +100,8 @@
             direction = { x: gridSize, y: 0 };
             score = 0;
             placeFood();
-            document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
+            updateScoreDisplay();
+            if (gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(drawGame, 100);
         }
 
@@ -103,6 +158,7 @@
 
             if (checkCollision(wrappedHead)) {
                 clearInterval(gameInterval);
+                updateLeaderboard();
                 alert(`Игра окончена! Ваш счёт: ${score}`);
                 return;
             }
@@ -111,11 +167,39 @@
 
             if (wrappedHead.x === food.x && wrappedHead.y === food.y) {
                 score++;
-                document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
+                updateScoreDisplay();
                 placeFood();
             } else {
                 snake.pop();
             }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("highScore", highScore);
+            }
+            document.getElementById("highScoreDisplay").textContent = `Лучший результат: ${highScore}`;
+        }
+
+        function updateLeaderboard() {
+            const playerName = prompt("Введите ваше имя:", "Игрок");
+            leaderboard.push({ name: playerName || "Игрок", score });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10); // Топ-10
+            localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const tableBody = document.querySelector("#leaderboard tbody");
+            tableBody.innerHTML = "";
+            leaderboard.forEach((entry, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${index + 1}</td><td>${entry.name}</td><td>${entry.score}</td>`;
+                tableBody.appendChild(row);
+            });
         }
 
         document.addEventListener("keydown", (e) => {
@@ -135,7 +219,10 @@
             }
         });
 
+        document.getElementById("restartButton").addEventListener("click", initializeGame);
+
         initializeGame();
+        renderLeaderboard();
     </script>
 </body>
 </html>
