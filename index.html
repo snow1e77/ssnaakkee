@@ -5,46 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <style>
-        /* Ваши предыдущие стили */
-        .leaderboard-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #333;
-            color: white;
-            padding: 20px;
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background-color: black;
             border: 2px solid #fff;
-            border-radius: 10px;
-            z-index: 1000;
+        }
+        .controls {
             text-align: center;
-            max-width: 90%;
-        }
-        .modal-close {
             margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
-        .modal-close:hover {
-            background-color: #d43d3d;
-        }
-        .leaderboard-button {
-            margin-top: 10px;
+        button {
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #007bff;
-            color: white;
+            margin: 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .leaderboard-button:hover {
-            background-color: #0056b3;
+        .score, .high-score {
+            text-align: center;
+            color: white;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -54,24 +36,7 @@
     <canvas id="snakeGame" width="400" height="400"></canvas>
     <div class="controls">
         <button id="restartButton">Перезапустить игру</button>
-        <button id="showLeaderboardButton" class="leaderboard-button">Показать таблицу лидеров</button>
     </div>
-    <div id="leaderboardModal" class="leaderboard-modal">
-        <h3>Таблица лидеров</h3>
-        <table id="leaderboard">
-            <thead>
-                <tr>
-                    <th>Место</th>
-                    <th>Игрок</th>
-                    <th>Счёт</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <button id="closeLeaderboardButton" class="modal-close">Закрыть</button>
-    </div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
@@ -81,13 +46,11 @@
         let food = {};
         let score = 0;
         let highScore = localStorage.getItem("highScore") || 0;
-        let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
         let gameInterval;
-        let telegramUser = null;
 
-        // Initialize Telegram WebApp and get user data
-        Telegram.WebApp.ready();
-        telegramUser = Telegram.WebApp.initDataUnsafe?.user || { first_name: "Гость" };
+        // Загрузка фонового изображения
+        const backgroundImage = new Image();
+        backgroundImage.src = 'gJoPr77TwBFKgAAAABJRU5ErkJggg.png'; // Укажите корректный путь к файлу
 
         function initializeGame() {
             const startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
@@ -102,47 +65,39 @@
         }
 
         function placeFood() {
-            let newFoodPosition;
-            do {
-                newFoodPosition = {
-                    x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                    y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
-                };
-            } while (isFoodInSnake(newFoodPosition));
-            food = newFoodPosition;
-        }
-
-        function isFoodInSnake(position) {
-            return snake.some(segment => segment.x === position.x && segment.y === position.y);
-        }
-
-        function wrapAround(head) {
-            if (head.x < 0) head.x = canvas.width - gridSize;
-            if (head.x >= canvas.width) head.x = 0;
-            if (head.y < 0) head.y = canvas.height - gridSize;
-            if (head.y >= canvas.height) head.y = 0;
-            return head;
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
+            };
         }
 
         function drawGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Отрисовка фона
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
+            // Отрисовка еды
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
+            // Отрисовка змейки
             snake.forEach((segment, index) => {
                 ctx.fillStyle = index === 0 ? 'lime' : 'green';
                 ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
             });
 
-            const head = wrapAround({
+            // Движение змейки
+            const head = {
                 x: snake[0].x + direction.x,
                 y: snake[0].y + direction.y,
-            });
+            };
+
+            if (head.x < 0) head.x = canvas.width - gridSize;
+            if (head.x >= canvas.width) head.x = 0;
+            if (head.y < 0) head.y = canvas.height - gridSize;
+            if (head.y >= canvas.height) head.y = 0;
 
             if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
                 clearInterval(gameInterval);
-                updateLeaderboard();
                 alert(`Игра окончена! Ваш счёт: ${score}`);
                 return;
             }
@@ -167,41 +122,7 @@
             document.getElementById("highScoreDisplay").textContent = `Лучший результат: ${highScore}`;
         }
 
-        function updateLeaderboard() {
-            const playerName = telegramUser.first_name || "Игрок";
-            const existingPlayer = leaderboard.find(entry => entry.name === playerName);
-
-            if (existingPlayer) {
-                if (score > existingPlayer.score) {
-                    existingPlayer.score = score;
-                }
-            } else {
-                leaderboard.push({ name: playerName, score });
-            }
-
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 10); // Топ-10
-            localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-        }
-
-        function renderLeaderboard() {
-            const tableBody = document.querySelector("#leaderboard tbody");
-            tableBody.innerHTML = "";
-            leaderboard.forEach((entry, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${index + 1}</td><td>${entry.name}</td><td>${entry.score}</td>`;
-                tableBody.appendChild(row);
-            });
-        }
-
         document.getElementById("restartButton").addEventListener("click", initializeGame);
-        document.getElementById("showLeaderboardButton").addEventListener("click", () => {
-            document.getElementById("leaderboardModal").style.display = "block";
-            renderLeaderboard();
-        });
-        document.getElementById("closeLeaderboardButton").addEventListener("click", () => {
-            document.getElementById("leaderboardModal").style.display = "none";
-        });
 
         document.addEventListener("keydown", (e) => {
             switch (e.key) {
