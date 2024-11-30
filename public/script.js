@@ -12,7 +12,9 @@ let direction = 'right';
 let food = { x: 100, y: 100 };
 let score = 0;
 let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
-let gameInterval = setInterval(gameLoop, 100);
+let isPaused = false; // Флаг для паузы
+let gameIntervalSpeed = 100; // Скорость игры
+let gameInterval = setInterval(gameLoop, gameIntervalSpeed);
 
 // Обновляем отображение счёта и лучшего результата
 function updateScoreDisplay() {
@@ -32,10 +34,7 @@ function drawSnake() {
     gameContainer.innerHTML = ''; // Очистить контейнер перед отрисовкой
     snake.forEach(segment => {
         const snakePart = document.createElement('div');
-        snakePart.style.width = `${blockSize}px`;
-        snakePart.style.height = `${blockSize}px`;
-        snakePart.style.backgroundColor = 'green';
-        snakePart.style.position = 'absolute';
+        snakePart.classList.add('snakePart'); // Добавлен класс для стилизации
         snakePart.style.top = `${segment.y}px`;
         snakePart.style.left = `${segment.x}px`;
         gameContainer.appendChild(snakePart);
@@ -70,6 +69,15 @@ function generateFood() {
 // Обработка нажатия клавиш для управления змейкой
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
+        case 'p': // Нажатие клавиши 'p' для паузы/возобновления
+            if (isPaused) {
+                isPaused = false;
+                gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+            } else {
+                isPaused = true;
+                clearInterval(gameInterval);
+            }
+            break;
         case 'ArrowUp':
             if (direction !== 'down') direction = 'up';
             break;
@@ -87,6 +95,8 @@ document.addEventListener('keydown', (event) => {
 
 // Основной игровой цикл
 function gameLoop() {
+    if (isPaused) return; // Если игра на паузе, не выполняем цикл
+
     const head = { ...snake[0] };
 
     switch (direction) {
@@ -138,7 +148,7 @@ function resetGame() {
     score = 0;
     generateFood();
     clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 100);
+    gameInterval = setInterval(gameLoop, gameIntervalSpeed);
 }
 
 // Инициализация игры
