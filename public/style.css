@@ -1,31 +1,21 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-#scoreboard {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 20px;
-}
-
-#scoreboard p {
-    margin: 5px 0;
-}
-
 #gameContainer {
+    background-image: url('https://i.imgur.com/XHWmP3v.png');
+    background-size: cover;
+    position: relative;
+    margin: 20px auto;
     width: 400px;
     height: 400px;
-    border: 2px solid #333;
+}
+
+#startButton {
+    display: block;
     margin: 20px auto;
-    position: relative;
-    background-image: url('https://i.imgur.com/XHWmP3v.png'); /* Замените на ссылку на изображение */
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#scoreDisplay {
+    text-align: center;
+    margin-top: 10px;
 }
