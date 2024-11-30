@@ -47,6 +47,11 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        @media (min-width: 768px) {
+            .controls {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -123,18 +128,50 @@
             }
         }
 
-        document.getElementById("up").addEventListener("click", () => {
-            if (direction.y === 0) direction = { x: 0, y: -gridSize };
-        });
-        document.getElementById("down").addEventListener("click", () => {
-            if (direction.y === 0) direction = { x: 0, y: gridSize };
-        });
-        document.getElementById("left").addEventListener("click", () => {
-            if (direction.x === 0) direction = { x: -gridSize, y: 0 };
-        });
-        document.getElementById("right").addEventListener("click", () => {
-            if (direction.x === 0) direction = { x: gridSize, y: 0 };
-        });
+        function handleKeydown(e) {
+            switch (e.key) {
+                case "ArrowUp":
+                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
+                    break;
+                case "ArrowDown":
+                    if (direction.y === 0) direction = { x: 0, y: gridSize };
+                    break;
+                case "ArrowLeft":
+                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
+                    break;
+                case "ArrowRight":
+                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
+                    break;
+            }
+        }
+
+        function handleButtonClick(dir) {
+            switch (dir) {
+                case "up":
+                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
+                    break;
+                case "down":
+                    if (direction.y === 0) direction = { x: 0, y: gridSize };
+                    break;
+                case "left":
+                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
+                    break;
+                case "right":
+                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
+                    break;
+            }
+        }
+
+        // Обработчики для кнопок на мобильных устройствах
+        document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
+        document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
+        document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
+        document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
+
+        // Добавляем слушатель для клавиатуры, только на компьютерах
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            document.addEventListener("keydown", handleKeydown);
+        }
 
         document.getElementById("restartGame").addEventListener("click", initializeGame);
 
