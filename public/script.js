@@ -3,6 +3,7 @@ const gameContainer = document.getElementById('gameContainer');
 const currentScoreDisplay = document.getElementById('currentScore');
 const highScoreDisplay = document.getElementById('highScore');
 const startButton = document.getElementById('startButton');
+const pauseButton = document.getElementById('pauseButton');
 const gameSize = 400;
 const blockSize = 20;
 const gridCount = gameSize / blockSize;
@@ -17,25 +18,12 @@ let isPaused = false; // Флаг для паузы
 let gameIntervalSpeed = 100; // Скорость игры
 let gameInterval;
 
-// Обновляем отображение счёта и лучшего результата
-function updateScoreDisplay() {
-    currentScoreDisplay.textContent = score;
-    highScoreDisplay.textContent = highScore;
-}
-
-// Функция для создания игрового поля
-function createGameBoard() {
-    gameContainer.style.width = `${gameSize}px`;
-    gameContainer.style.height = `${gameSize}px`;
-    gameContainer.style.position = 'relative';
-}
-
 // Функция для отрисовки змейки
 function drawSnake() {
     gameContainer.innerHTML = ''; // Очистить контейнер перед отрисовкой
     snake.forEach(segment => {
         const snakePart = document.createElement('div');
-        snakePart.classList.add('snakePart'); // Добавлен класс для стилизации
+        snakePart.classList.add('snakePart');
         snakePart.style.top = `${segment.y}px`;
         snakePart.style.left = `${segment.x}px`;
         gameContainer.appendChild(snakePart);
@@ -54,7 +42,7 @@ function drawFood() {
     gameContainer.appendChild(foodElement);
 }
 
-// Генерация новой еды в случайной позиции
+// Функция для генерации новой еды
 function generateFood() {
     food.x = Math.floor(Math.random() * gridCount) * blockSize;
     food.y = Math.floor(Math.random() * gridCount) * blockSize;
@@ -133,6 +121,12 @@ function gameLoop() {
     updateScoreDisplay();
 }
 
+// Функция для обновления отображения счёта
+function updateScoreDisplay() {
+    currentScoreDisplay.textContent = score;
+    highScoreDisplay.textContent = highScore;
+}
+
 // Функция для сброса игры
 function resetGame() {
     snake = [
@@ -144,16 +138,27 @@ function resetGame() {
     clearInterval(gameInterval);
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
     isPaused = false;
+    pauseButton.style.display = 'none';
+    startButton.style.display = 'block';
 }
 
 // Функция для начала игры
 startButton.addEventListener('click', () => {
-    startButton.style.display = 'none'; // Скрыть кнопку при начале игры
+    startButton.style.display = 'none';
+    pauseButton.style.display = 'block';
     createGameBoard();
     generateFood();
     updateScoreDisplay();
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
 });
 
-// Инициализация игры при загрузке страницы
-startButton.style.display = 'block';
+// Функция для паузы игры
+pauseButton.addEventListener('click', () => {
+    isPaused = !isPaused;
+    pauseButton.textContent = isPaused ? 'Продолжить' : 'Пауза';
+    if (!isPaused) {
+        gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+    } else {
+        clearInterval(gameInterval);
+    }
+});
