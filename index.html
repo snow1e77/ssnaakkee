@@ -94,6 +94,25 @@
             };
         }
 
+        function checkCollision(head) {
+            // Проверка самопересечения
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function wrapAround(head) {
+            // Обработка выхода за границы
+            if (head.x < 0) head.x = canvas.width - gridSize;
+            if (head.x >= canvas.width) head.x = 0;
+            if (head.y < 0) head.y = canvas.height - gridSize;
+            if (head.y >= canvas.height) head.y = 0;
+            return head;
+        }
+
         function drawGame() {
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -105,23 +124,24 @@
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
 
             const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            snake.unshift(head);
+            // Обработка выхода за границы
+            const wrappedHead = wrapAround(head);
 
-            if (head.x === food.x && head.y === food.y) {
+            // Проверка на столкновение
+            if (checkCollision(wrappedHead)) {
+                clearInterval(gameInterval);
+                alert(`Игра окончена! Ваш счёт: ${score}`);
+                document.getElementById("restartGame").style.display = "block";
+                return;
+            }
+
+            snake.unshift(wrappedHead);
+
+            if (wrappedHead.x === food.x && wrappedHead.y === food.y) {
                 score++;
                 placeFood();
             } else {
                 snake.pop();
-            }
-
-            if (
-                head.x < 0 || head.x >= canvas.width ||
-                head.y < 0 || head.y >= canvas.height ||
-                snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
-            ) {
-                clearInterval(gameInterval);
-                alert(`Игра окончена! Ваш счёт: ${score}`);
-                document.getElementById("restartGame").style.display = "block";
             }
         }
 
@@ -159,15 +179,13 @@
             }
         }
 
-        // Обработчики для кнопок на экране
         document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
         document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
         document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
         document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
 
-        // Обработчик для клавиатуры
         document.addEventListener("keydown", (e) => {
-            e.preventDefault(); // Предотвращаем возможные конфликты с другими событиями
+            e.preventDefault();
             handleKeydown(e);
         });
 
