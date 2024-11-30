@@ -9,18 +9,33 @@
             margin: 0;
             background-color: #222;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
         canvas {
             border: 2px solid #fff;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: lime;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #33cc33;
         }
     </style>
 </head>
 <body>
     <canvas id="snakeGame"></canvas>
+    <button id="restartGame" style="display: none;">Перезапустить игру</button>
     <script>
-        // Инициализация Telegram WebApp API
+        // Telegram WebApp API
         const tg = window.Telegram?.WebApp;
         if (tg) tg.ready();
 
@@ -31,12 +46,42 @@
         canvas.width = 400;
         canvas.height = 400;
 
-        let snake = [{ x: gridSize * 5, y: gridSize * 5 }];
+        // Переменные игры
+        let snake = [];
         let direction = { x: gridSize, y: 0 };
-        let food = { x: gridSize * 7, y: gridSize * 7 };
+        let food = {};
         let score = 0;
+        let gameInterval;
 
-        // Функция отрисовки игры
+        // Инициализация игры
+        function initializeGame() {
+            // Случайная начальная позиция змейки
+            const startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
+            const startY = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
+
+            snake = [{ x: startX, y: startY }];
+            direction = { x: gridSize, y: 0 };
+            score = 0;
+
+            // Случайное размещение еды
+            placeFood();
+
+            // Скрыть кнопку перезапуска
+            document.getElementById("restartGame").style.display = "none";
+
+            // Запустить игровой цикл
+            gameInterval = setInterval(drawGame, 100);
+        }
+
+        // Размещение еды
+        function placeFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
+            };
+        }
+
+        // Основной игровой цикл
         function drawGame() {
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -56,10 +101,7 @@
             // Проверка на столкновение с едой
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                food = {
-                    x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                    y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
-                };
+                placeFood();
             } else {
                 snake.pop();
             }
@@ -70,14 +112,13 @@
                 head.y < 0 || head.y >= canvas.height ||
                 snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
             ) {
+                clearInterval(gameInterval);
                 alert(`Игра окончена! Ваш счёт: ${score}`);
-                tg?.close();
+                document.getElementById("restartGame").style.display = "block";
             }
-
-            requestAnimationFrame(drawGame);
         }
 
-        // Управление с помощью свайпов
+        // Управление свайпами (для телефонов)
         let startX, startY;
         window.addEventListener("touchstart", (e) => {
             const touch = e.touches[0];
@@ -99,8 +140,11 @@
             }
         });
 
-        // Запуск игры
-        drawGame();
+        // Кнопка перезапуска
+        document.getElementById("restartGame").addEventListener("click", initializeGame);
+
+        // Запуск игры при загрузке
+        initializeGame();
     </script>
 </body>
 </html>
