@@ -4,6 +4,8 @@ const currentScoreDisplay = document.getElementById('currentScore');
 const highScoreDisplay = document.getElementById('highScore');
 const startButton = document.getElementById('startButton');
 const pauseButton = document.getElementById('pauseButton');
+const restartButton = document.getElementById('restartButton');
+const gameOverScreen = document.getElementById('gameOverScreen');
 const gameSize = 400;
 const blockSize = 20;
 const gridCount = gameSize / blockSize;
@@ -33,10 +35,7 @@ function drawSnake() {
 // Функция для отрисовки еды
 function drawFood() {
     const foodElement = document.createElement('div');
-    foodElement.style.width = `${blockSize}px`;
-    foodElement.style.height = `${blockSize}px`;
-    foodElement.style.backgroundColor = 'red';
-    foodElement.style.position = 'absolute';
+    foodElement.id = 'food';
     foodElement.style.top = `${food.y}px`;
     foodElement.style.left = `${food.x}px`;
     gameContainer.appendChild(foodElement);
@@ -97,8 +96,7 @@ function gameLoop() {
     // Проверка на столкновение с телом змейки
     for (let i = 0; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
-            alert('Game Over! Your score: ' + score);
-            resetGame();
+            gameOver();
             return;
         }
     }
@@ -127,19 +125,28 @@ function updateScoreDisplay() {
     highScoreDisplay.textContent = highScore;
 }
 
+// Функция для обработки окончания игры
+function gameOver() {
+    clearInterval(gameInterval);
+    gameOverScreen.style.display = 'block';
+    startButton.style.display = 'block';
+    pauseButton.style.display = 'none';
+}
+
 // Функция для сброса игры
 function resetGame() {
+    gameOverScreen.style.display = 'none';
     snake = [
         { x: 160, y: 160 },
     ];
     direction = 'right';
     score = 0;
     generateFood();
-    clearInterval(gameInterval);
+    updateScoreDisplay();
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
     isPaused = false;
-    pauseButton.style.display = 'none';
-    startButton.style.display = 'block';
+    pauseButton.style.display = 'block';
+    startButton.style.display = 'none';
 }
 
 // Функция для начала игры
@@ -162,3 +169,6 @@ pauseButton.addEventListener('click', () => {
         clearInterval(gameInterval);
     }
 });
+
+// Слушатель события для перезапуска игры
+restartButton.addEventListener('click', resetGame);
