@@ -3,54 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Snake Game with Background Image</title>
     <style>
         body {
             margin: 0;
-            background-color: #222;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            background-color: #222;
         }
         canvas {
             border: 2px solid #fff;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: lime;
-            color: #222;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #33cc33;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .direction-button {
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            border: 2px solid #fff;
-            background-color: #444;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        @media (min-width: 768px) {
-            .controls {
-                display: none;
-            }
+            background-image: url('‪C:\Users\User\Documents\photo_2024-11-30_21-59-13.jpg'); /* Путь к изображению */
+            background-size: cover;
+            background-repeat: no-repeat;
         }
         .score {
             color: white;
@@ -61,21 +28,11 @@
 </head>
 <body>
     <div class="score" id="scoreDisplay">Счёт: 0</div>
-    <canvas id="snakeGame"></canvas>
-    <button id="restartGame" style="display: none;">Перезапустить игру</button>
-    <div class="controls">
-        <div class="direction-button" id="up">↑</div>
-        <div class="direction-button" id="left">←</div>
-        <div class="direction-button" id="down">↓</div>
-        <div class="direction-button" id="right">→</div>
-    </div>
+    <canvas id="snakeGame" width="400" height="400"></canvas>
     <script>
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const gridSize = 20;
-        canvas.width = 400;
-        canvas.height = 400;
-
         let snake = [];
         let direction = { x: gridSize, y: 0 };
         let food = {};
@@ -90,7 +47,6 @@
             score = 0;
             placeFood();
             document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
-            document.getElementById("restartGame").style.display = "none";
             gameInterval = setInterval(drawGame, 100);
         }
 
@@ -132,8 +88,7 @@
         }
 
         function drawGame() {
-            ctx.fillStyle = "#222";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
@@ -149,7 +104,6 @@
             if (checkCollision(wrappedHead)) {
                 clearInterval(gameInterval);
                 alert(`Игра окончена! Ваш счёт: ${score}`);
-                document.getElementById("restartGame").style.display = "block";
                 return;
             }
 
@@ -164,7 +118,7 @@
             }
         }
 
-        function handleKeydown(e) {
+        document.addEventListener("keydown", (e) => {
             switch (e.key) {
                 case "ArrowUp":
                     if (direction.y === 0) direction = { x: 0, y: -gridSize };
@@ -179,36 +133,7 @@
                     if (direction.x === 0) direction = { x: gridSize, y: 0 };
                     break;
             }
-        }
-
-        function handleButtonClick(dir) {
-            switch (dir) {
-                case "up":
-                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
-                    break;
-                case "down":
-                    if (direction.y === 0) direction = { x: 0, y: gridSize };
-                    break;
-                case "left":
-                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
-                    break;
-                case "right":
-                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
-                    break;
-            }
-        }
-
-        document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
-        document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
-        document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
-        document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
-
-        document.addEventListener("keydown", (e) => {
-            e.preventDefault();
-            handleKeydown(e);
         });
-
-        document.getElementById("restartGame").addEventListener("click", initializeGame);
 
         initializeGame();
     </script>
