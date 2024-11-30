@@ -3,60 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game with Telegram Integration</title>
+    <title>Snake Game</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #222;
-        }
-        canvas {
+        /* Ваши предыдущие стили */
+        .leaderboard-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: white;
+            padding: 20px;
             border: 2px solid #fff;
-            background-image: url('gJoPr77TwBFKgAAAABJRU5ErkJggg.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-        .score, .high-score {
-            color: white;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .leaderboard {
-            color: white;
-            margin-top: 20px;
-            font-size: 20px;
+            border-radius: 10px;
+            z-index: 1000;
             text-align: center;
+            max-width: 90%;
         }
-        .controls {
+        .modal-close {
             margin-top: 10px;
-        }
-        button {
             padding: 10px 20px;
-            font-size: 18px;
-            background-color: #28a745;
+            background-color: #ff4d4d;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #218838;
+        .modal-close:hover {
+            background-color: #d43d3d;
         }
-        table {
-            margin-top: 20px;
-            border-collapse: collapse;
-            width: 100%;
-        }
-        table, th, td {
-            border: 1px solid white;
+        .leaderboard-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        th, td {
-            padding: 10px;
-            text-align: center;
+        .leaderboard-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -66,8 +54,9 @@
     <canvas id="snakeGame" width="400" height="400"></canvas>
     <div class="controls">
         <button id="restartButton">Перезапустить игру</button>
+        <button id="showLeaderboardButton" class="leaderboard-button">Показать таблицу лидеров</button>
     </div>
-    <div class="leaderboard">
+    <div id="leaderboardModal" class="leaderboard-modal">
         <h3>Таблица лидеров</h3>
         <table id="leaderboard">
             <thead>
@@ -80,6 +69,7 @@
             <tbody>
             </tbody>
         </table>
+        <button id="closeLeaderboardButton" class="modal-close">Закрыть</button>
     </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -97,7 +87,7 @@
 
         // Initialize Telegram WebApp and get user data
         Telegram.WebApp.ready();
-        telegramUser = Telegram.WebApp.initDataUnsafe?.user || null;
+        telegramUser = Telegram.WebApp.initDataUnsafe?.user || { first_name: "Гость" };
 
         function initializeGame() {
             const startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
@@ -123,21 +113,7 @@
         }
 
         function isFoodInSnake(position) {
-            for (let segment of snake) {
-                if (segment.x === position.x && segment.y === position.y) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function checkCollision(head) {
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    return true;
-                }
-            }
-            return false;
+            return snake.some(segment => segment.x === position.x && segment.y === position.y);
         }
 
         function wrapAround(head) {
@@ -159,19 +135,21 @@
                 ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
             });
 
-            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            const wrappedHead = wrapAround(head);
+            const head = wrapAround({
+                x: snake[0].x + direction.x,
+                y: snake[0].y + direction.y,
+            });
 
-            if (checkCollision(wrappedHead)) {
+            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
                 clearInterval(gameInterval);
                 updateLeaderboard();
                 alert(`Игра окончена! Ваш счёт: ${score}`);
                 return;
             }
 
-            snake.unshift(wrappedHead);
+            snake.unshift(head);
 
-            if (wrappedHead.x === food.x && wrappedHead.y === food.y) {
+            if (head.x === food.x && head.y === food.y) {
                 score++;
                 updateScoreDisplay();
                 placeFood();
@@ -190,14 +168,20 @@
         }
 
         function updateLeaderboard() {
-            if (!telegramUser) return;
-
             const playerName = telegramUser.first_name || "Игрок";
-            leaderboard.push({ name: playerName, score });
+            const existingPlayer = leaderboard.find(entry => entry.name === playerName);
+
+            if (existingPlayer) {
+                if (score > existingPlayer.score) {
+                    existingPlayer.score = score;
+                }
+            } else {
+                leaderboard.push({ name: playerName, score });
+            }
+
             leaderboard.sort((a, b) => b.score - a.score);
             leaderboard = leaderboard.slice(0, 10); // Топ-10
             localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-            renderLeaderboard();
         }
 
         function renderLeaderboard() {
@@ -210,27 +194,25 @@
             });
         }
 
+        document.getElementById("restartButton").addEventListener("click", initializeGame);
+        document.getElementById("showLeaderboardButton").addEventListener("click", () => {
+            document.getElementById("leaderboardModal").style.display = "block";
+            renderLeaderboard();
+        });
+        document.getElementById("closeLeaderboardButton").addEventListener("click", () => {
+            document.getElementById("leaderboardModal").style.display = "none";
+        });
+
         document.addEventListener("keydown", (e) => {
             switch (e.key) {
-                case "ArrowUp":
-                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
-                    break;
-                case "ArrowDown":
-                    if (direction.y === 0) direction = { x: 0, y: gridSize };
-                    break;
-                case "ArrowLeft":
-                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
-                    break;
-                case "ArrowRight":
-                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
-                    break;
+                case "ArrowUp": if (direction.y === 0) direction = { x: 0, y: -gridSize }; break;
+                case "ArrowDown": if (direction.y === 0) direction = { x: 0, y: gridSize }; break;
+                case "ArrowLeft": if (direction.x === 0) direction = { x: -gridSize, y: 0 }; break;
+                case "ArrowRight": if (direction.x === 0) direction = { x: gridSize, y: 0 }; break;
             }
         });
 
-        document.getElementById("restartButton").addEventListener("click", initializeGame);
-
         initializeGame();
-        renderLeaderboard();
     </script>
 </body>
 </html>
