@@ -9,13 +9,13 @@ let snake = [
 let direction = 'right'; // Начальное направление
 let food = { x: 100, y: 100 }; // Начальная позиция еды
 let score = 0; // Счет игрока
+let gameInterval = setInterval(gameLoop, 100); // Интервал игры для увеличения скорости
 
 // Функция для создания игрового поля и отрисовки объектов
 function createGameBoard() {
     gameContainer.style.width = `${gameSize}px`;
     gameContainer.style.height = `${gameSize}px`;
     gameContainer.style.position = 'relative';
-    gameContainer.style.backgroundColor = 'lightgray';
 }
 
 // Функция для отрисовки змейки
@@ -135,9 +135,10 @@ function resetGame() {
     direction = 'right';
     score = 0;
     generateFood();
+    clearInterval(gameInterval);
+    gameInterval = setInterval(gameLoop, 100); // Сброс скорости игры
 }
 
 // Инициализация игры
 createGameBoard();
 generateFood();
-setInterval(gameLoop, 200); // Запуск игрового цикла с интервалом 200 мс
