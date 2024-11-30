@@ -1,17 +1,26 @@
 // Инициализация переменных игры
 const gameContainer = document.getElementById('gameContainer');
-const gameSize = 400; // Размер игрового поля
-const blockSize = 20; // Размер одного блока
+const currentScoreDisplay = document.getElementById('currentScore');
+const highScoreDisplay = document.getElementById('highScore');
+const gameSize = 400;
+const blockSize = 20;
 const gridCount = gameSize / blockSize;
 let snake = [
-    { x: 160, y: 160 }, // Начальная позиция змейки (в пикселях)
+    { x: 160, y: 160 },
 ];
-let direction = 'right'; // Начальное направление
-let food = { x: 100, y: 100 }; // Начальная позиция еды
-let score = 0; // Счет игрока
-let gameInterval = setInterval(gameLoop, 100); // Интервал игры для увеличения скорости
+let direction = 'right';
+let food = { x: 100, y: 100 };
+let score = 0;
+let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+let gameInterval = setInterval(gameLoop, 100);
 
-// Функция для создания игрового поля и отрисовки объектов
+// Обновляем отображение счёта и лучшего результата
+function updateScoreDisplay() {
+    currentScoreDisplay.textContent = score;
+    highScoreDisplay.textContent = highScore;
+}
+
+// Функция для создания игрового поля
 function createGameBoard() {
     gameContainer.style.width = `${gameSize}px`;
     gameContainer.style.height = `${gameSize}px`;
@@ -78,22 +87,13 @@ document.addEventListener('keydown', (event) => {
 
 // Основной игровой цикл
 function gameLoop() {
-    // Вычислить новое положение головы змейки
     const head = { ...snake[0] };
 
     switch (direction) {
-        case 'up':
-            head.y -= blockSize;
-            break;
-        case 'down':
-            head.y += blockSize;
-            break;
-        case 'left':
-            head.x -= blockSize;
-            break;
-        case 'right':
-            head.x += blockSize;
-            break;
+        case 'up': head.y -= blockSize; break;
+        case 'down': head.y += blockSize; break;
+        case 'left': head.x -= blockSize; break;
+        case 'right': head.x += blockSize; break;
     }
 
     // Проверка на столкновение с границей (телепортация)
@@ -113,17 +113,20 @@ function gameLoop() {
 
     // Проверка на съеденную еду
     if (head.x === food.x && head.y === food.y) {
-        score += 10; // Увеличение счета
+        score += 10;
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('highScore', highScore);
+        }
         generateFood();
     } else {
-        snake.pop(); // Удаление последнего сегмента змейки
+        snake.pop();
     }
 
-    // Добавление нового сегмента змейки
     snake.unshift(head);
-
     drawSnake();
     drawFood();
+    updateScoreDisplay();
 }
 
 // Функция для сброса игры
@@ -135,9 +138,10 @@ function resetGame() {
     score = 0;
     generateFood();
     clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 100); // Сброс скорости игры
+    gameInterval = setInterval(gameLoop, 100);
 }
 
 // Инициализация игры
 createGameBoard();
 generateFood();
+updateScoreDisplay();
