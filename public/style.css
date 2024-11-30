@@ -5,12 +5,12 @@
     border: 2px solid #333;
     margin: 20px auto;
     position: relative;
-    background-color: #e0e0e0; /* Цвет фона игрового поля */
-    background-image: url('https://imgur.com/a/ADq8yuf'); /* Изображение фона */
+    background-image: url('https://example.com/path/to/your/image.png'); /* Замените на URL вашего изображения */
     background-size: cover; /* Подгоняет изображение, чтобы оно покрывало весь контейнер */
     background-repeat: no-repeat;
     background-position: center;
 }
+
 
 /* Стиль кнопки для отображения таблицы лидеров */
 #showLeaderboardButton {
