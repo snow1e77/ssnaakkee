@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Игра в змейку</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Snake Game</h1>
-    <!-- Контейнер для игры -->
+    <div id="scoreboard">
+        <p>Текущий счёт: <span id="currentScore">0</span></p>
+        <p>Лучший результат: <span id="highScore">0</span></p>
+    </div>
     <div id="gameContainer"></div>
-    <!-- Кнопка для отображения таблицы лидеров -->
-    <button id="showLeaderboardButton">Показать таблицу лидеров</button>
-    <!-- Блок для отображения таблицы лидеров -->
-    <div id="leaderboard"></div>
     <script src="script.js"></script>
 </body>
 </html>
