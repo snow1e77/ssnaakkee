@@ -95,10 +95,23 @@
         }
 
         function placeFood() {
-            food = {
-                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
-            };
+            let newFoodPosition;
+            do {
+                newFoodPosition = {
+                    x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                    y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
+                };
+            } while (isFoodInSnake(newFoodPosition));
+            food = newFoodPosition;
+        }
+
+        function isFoodInSnake(position) {
+            for (let segment of snake) {
+                if (segment.x === position.x && segment.y === position.y) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function checkCollision(head) {
@@ -126,7 +139,7 @@
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
             snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? 'lime' : 'green'; // Голова змейки отличается цветом
+                ctx.fillStyle = index === 0 ? 'lime' : 'green';
                 ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
             });
 
