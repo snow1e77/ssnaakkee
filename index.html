@@ -64,9 +64,6 @@
         <div class="direction-button" id="right">→</div>
     </div>
     <script>
-        const tg = window.Telegram?.WebApp;
-        if (tg) tg.ready();
-
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const gridSize = 20;
@@ -162,16 +159,17 @@
             }
         }
 
-        // Проверка, если игра открыта в десктопной версии Telegram
-        if (navigator.userAgent.includes("TelegramDesktop")) {
-            document.addEventListener("keydown", handleKeydown);
-        } else {
-            document.querySelector(".controls").style.display = "flex";
-            document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
-            document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
-            document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
-            document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
-        }
+        // Обработчики для кнопок на экране
+        document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
+        document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
+        document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
+        document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
+
+        // Обработчик для клавиатуры
+        document.addEventListener("keydown", (e) => {
+            e.preventDefault(); // Предотвращаем возможные конфликты с другими событиями
+            handleKeydown(e);
+        });
 
         document.getElementById("restartGame").addEventListener("click", initializeGame);
 
