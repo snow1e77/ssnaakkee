@@ -5,7 +5,8 @@ const highScoreDisplay = document.getElementById('highScore');
 const startButton = document.getElementById('startButton');
 const pauseButton = document.getElementById('pauseButton');
 const restartButton = document.getElementById('restartButton');
-const gameOverScreen = document.getElementById('gameOverScreen');
+const gameOverModal = document.getElementById('gameOverModal');
+const finalScoreDisplay = document.getElementById('finalScore');
 const gameSize = 400;
 const blockSize = 20;
 const gridCount = gameSize / blockSize;
@@ -128,14 +129,15 @@ function updateScoreDisplay() {
 // Функция для обработки окончания игры
 function gameOver() {
     clearInterval(gameInterval);
-    gameOverScreen.style.display = 'block';
+    finalScoreDisplay.textContent = score;
+    gameOverModal.style.display = 'block';
     startButton.style.display = 'block';
     pauseButton.style.display = 'none';
 }
 
 // Функция для сброса игры
 function resetGame() {
-    gameOverScreen.style.display = 'none';
+    gameOverModal.style.display = 'none';
     snake = [
         { x: 160, y: 160 },
     ];
