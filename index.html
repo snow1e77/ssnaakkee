@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Snake Game with Telegram Integration</title>
     <style>
         body {
             margin: 0;
@@ -15,7 +15,7 @@
         }
         canvas {
             border: 2px solid #fff;
-            background-image: url('gJoPr77TwBFKgAAAABJRU5ErkJggg.png'); /* Укажите путь к изображению */
+            background-image: url('gJoPr77TwBFKgAAAABJRU5ErkJggg.png');
             background-size: cover;
             background-repeat: no-repeat;
         }
@@ -81,6 +81,7 @@
             </tbody>
         </table>
     </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
@@ -92,6 +93,11 @@
         let highScore = localStorage.getItem("highScore") || 0;
         let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
         let gameInterval;
+        let telegramUser = null;
+
+        // Initialize Telegram WebApp and get user data
+        Telegram.WebApp.ready();
+        telegramUser = Telegram.WebApp.initDataUnsafe?.user || null;
 
         function initializeGame() {
             const startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
@@ -184,8 +190,10 @@
         }
 
         function updateLeaderboard() {
-            const playerName = prompt("Введите ваше имя:", "Игрок");
-            leaderboard.push({ name: playerName || "Игрок", score });
+            if (!telegramUser) return;
+
+            const playerName = telegramUser.first_name || "Игрок";
+            leaderboard.push({ name: playerName, score });
             leaderboard.sort((a, b) => b.score - a.score);
             leaderboard = leaderboard.slice(0, 10); // Топ-10
             localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
