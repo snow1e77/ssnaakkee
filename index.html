@@ -52,9 +52,15 @@
                 display: none;
             }
         }
+        .score {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
+    <div class="score" id="scoreDisplay">Счёт: 0</div>
     <canvas id="snakeGame"></canvas>
     <button id="restartGame" style="display: none;">Перезапустить игру</button>
     <div class="controls">
@@ -83,6 +89,7 @@
             direction = { x: gridSize, y: 0 };
             score = 0;
             placeFood();
+            document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
             document.getElementById("restartGame").style.display = "none";
             gameInterval = setInterval(drawGame, 100);
         }
@@ -95,7 +102,6 @@
         }
 
         function checkCollision(head) {
-            // Проверка самопересечения
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
                     return true;
@@ -105,7 +111,6 @@
         }
 
         function wrapAround(head) {
-            // Обработка выхода за границы
             if (head.x < 0) head.x = canvas.width - gridSize;
             if (head.x >= canvas.width) head.x = 0;
             if (head.y < 0) head.y = canvas.height - gridSize;
@@ -120,14 +125,14 @@
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
-            ctx.fillStyle = "lime";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? 'lime' : 'green'; // Голова змейки отличается цветом
+                ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+            });
 
             const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            // Обработка выхода за границы
             const wrappedHead = wrapAround(head);
 
-            // Проверка на столкновение
             if (checkCollision(wrappedHead)) {
                 clearInterval(gameInterval);
                 alert(`Игра окончена! Ваш счёт: ${score}`);
@@ -139,6 +144,7 @@
 
             if (wrappedHead.x === food.x && wrappedHead.y === food.y) {
                 score++;
+                document.getElementById("scoreDisplay").textContent = `Счёт: ${score}`;
                 placeFood();
             } else {
                 snake.pop();
