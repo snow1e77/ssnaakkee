@@ -7,7 +7,14 @@
     height: 400px;
 }
 
-#startButton {
+.snakePart {
+    width: 20px;
+    height: 20px;
+    background-color: green;
+    position: absolute;
+}
+
+#startButton, #pauseButton {
     display: block;
     margin: 20px auto;
     padding: 10px 20px;
