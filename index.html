@@ -35,45 +35,32 @@
     <canvas id="snakeGame"></canvas>
     <button id="restartGame" style="display: none;">Перезапустить игру</button>
     <script>
-        // Telegram WebApp API
         const tg = window.Telegram?.WebApp;
         if (tg) tg.ready();
 
-        // Размеры игрового поля
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const gridSize = 20;
         canvas.width = 400;
         canvas.height = 400;
 
-        // Переменные игры
         let snake = [];
         let direction = { x: gridSize, y: 0 };
         let food = {};
         let score = 0;
         let gameInterval;
 
-        // Инициализация игры
         function initializeGame() {
-            // Случайная начальная позиция змейки
             const startX = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
             const startY = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
-
             snake = [{ x: startX, y: startY }];
             direction = { x: gridSize, y: 0 };
             score = 0;
-
-            // Случайное размещение еды
             placeFood();
-
-            // Скрыть кнопку перезапуска
             document.getElementById("restartGame").style.display = "none";
-
-            // Запустить игровой цикл
             gameInterval = setInterval(drawGame, 100);
         }
 
-        // Размещение еды
         function placeFood() {
             food = {
                 x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
@@ -81,24 +68,19 @@
             };
         }
 
-        // Основной игровой цикл
         function drawGame() {
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Рисуем еду
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
-            // Рисуем змейку
             ctx.fillStyle = "lime";
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
 
-            // Движение змейки
             const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             snake.unshift(head);
 
-            // Проверка на столкновение с едой
             if (head.x === food.x && head.y === food.y) {
                 score++;
                 placeFood();
@@ -106,7 +88,6 @@
                 snake.pop();
             }
 
-            // Проверка на столкновения
             if (
                 head.x < 0 || head.x >= canvas.width ||
                 head.y < 0 || head.y >= canvas.height ||
@@ -118,32 +99,25 @@
             }
         }
 
-        // Управление свайпами (для телефонов)
-        let startX, startY;
-        window.addEventListener("touchstart", (e) => {
-            const touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
-        });
-
-        window.addEventListener("touchend", (e) => {
-            const touch = e.changedTouches[0];
-            const deltaX = touch.clientX - startX;
-            const deltaY = touch.clientY - startY;
-
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 0 && direction.x === 0) direction = { x: gridSize, y: 0 }; // вправо
-                if (deltaX < 0 && direction.x === 0) direction = { x: -gridSize, y: 0 }; // влево
-            } else {
-                if (deltaY > 0 && direction.y === 0) direction = { x: 0, y: gridSize }; // вниз
-                if (deltaY < 0 && direction.y === 0) direction = { x: 0, y: -gridSize }; // вверх
+        document.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowUp":
+                    if (direction.y === 0) direction = { x: 0, y: -gridSize };
+                    break;
+                case "ArrowDown":
+                    if (direction.y === 0) direction = { x: 0, y: gridSize };
+                    break;
+                case "ArrowLeft":
+                    if (direction.x === 0) direction = { x: -gridSize, y: 0 };
+                    break;
+                case "ArrowRight":
+                    if (direction.x === 0) direction = { x: gridSize, y: 0 };
+                    break;
             }
         });
 
-        // Кнопка перезапуска
         document.getElementById("restartGame").addEventListener("click", initializeGame);
 
-        // Запуск игры при загрузке
         initializeGame();
     </script>
 </body>
