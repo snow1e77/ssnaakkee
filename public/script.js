@@ -1,57 +1,143 @@
-// Переменные для взаимодействия с сервером
-const serverUrl = 'http://localhost:3000'; // Укажите URL сервера
+// Инициализация переменных игры
+const gameContainer = document.getElementById('gameContainer');
+const gameSize = 400; // Размер игрового поля
+const blockSize = 20; // Размер одного блока
+const gridCount = gameSize / blockSize;
+let snake = [
+    { x: 160, y: 160 }, // Начальная позиция змейки (в пикселях)
+];
+let direction = 'right'; // Начальное направление
+let food = { x: 100, y: 100 }; // Начальная позиция еды
+let score = 0; // Счет игрока
 
-// Функция для отправки результатов на сервер
-async function submitScore(username, score) {
-    try {
-        const response = await fetch(`${serverUrl}/submitScore`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, score }),
-        });
-        if (!response.ok) {
-            throw new Error('Failed to submit score');
-        }
-        console.log('Score submitted successfully');
-    } catch (error) {
-        console.error('Error:', error);
-    }
+// Функция для создания игрового поля и отрисовки объектов
+function createGameBoard() {
+    gameContainer.style.width = `${gameSize}px`;
+    gameContainer.style.height = `${gameSize}px`;
+    gameContainer.style.position = 'relative';
+    gameContainer.style.backgroundColor = 'lightgray';
 }
 
-// Функция для получения и отображения таблицы лидеров
-async function fetchLeaderboard() {
-    try {
-        const response = await fetch(`${serverUrl}/leaderboard`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch leaderboard');
-        }
-        const leaderboard = await response.json();
-        displayLeaderboard(leaderboard);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// Функция для отображения таблицы лидеров на странице
-function displayLeaderboard(leaderboard) {
-    const leaderboardContainer = document.getElementById('leaderboard');
-    leaderboardContainer.innerHTML = ''; // Очищаем контейнер перед отображением
-    leaderboard.forEach(entry => {
-        const entryElement = document.createElement('div');
-        entryElement.textContent = `${entry.username}: ${entry.score}`;
-        leaderboardContainer.appendChild(entryElement);
+// Функция для отрисовки змейки
+function drawSnake() {
+    gameContainer.innerHTML = ''; // Очистить контейнер перед отрисовкой
+    snake.forEach(segment => {
+        const snakePart = document.createElement('div');
+        snakePart.style.width = `${blockSize}px`;
+        snakePart.style.height = `${blockSize}px`;
+        snakePart.style.backgroundColor = 'green';
+        snakePart.style.position = 'absolute';
+        snakePart.style.top = `${segment.y}px`;
+        snakePart.style.left = `${segment.x}px`;
+        gameContainer.appendChild(snakePart);
     });
 }
 
-// Обработчик для кнопки отображения таблицы лидеров
-document.getElementById('showLeaderboardButton').addEventListener('click', fetchLeaderboard);
+// Функция для отрисовки еды
+function drawFood() {
+    const foodElement = document.createElement('div');
+    foodElement.style.width = `${blockSize}px`;
+    foodElement.style.height = `${blockSize}px`;
+    foodElement.style.backgroundColor = 'red';
+    foodElement.style.position = 'absolute';
+    foodElement.style.top = `${food.y}px`;
+    foodElement.style.left = `${food.x}px`;
+    gameContainer.appendChild(foodElement);
+}
 
-// Код для отправки результата при завершении игры
-// Предположим, что у нас есть переменные `username` и `score` после игры
-// Например, при вызове функции завершения игры, можно сделать:
-const username = 'User123'; // Получаем юзернейм пользователя из Telegram (заменить на реальное значение)
-const score = 150; // Результат игры (здесь пример)
+// Генерация новой еды в случайной позиции
+function generateFood() {
+    food.x = Math.floor(Math.random() * gridCount) * blockSize;
+    food.y = Math.floor(Math.random() * gridCount) * blockSize;
 
-submitScore(username, score);
+    // Проверка, чтобы еда не появилась на змейке
+    snake.forEach(segment => {
+        if (segment.x === food.x && segment.y === food.y) {
+            generateFood();
+        }
+    });
+}
+
+// Обработка нажатия клавиш для управления змейкой
+document.addEventListener('keydown', (event) => {
+    switch (event.key) {
+        case 'ArrowUp':
+            if (direction !== 'down') direction = 'up';
+            break;
+        case 'ArrowDown':
+            if (direction !== 'up') direction = 'down';
+            break;
+        case 'ArrowLeft':
+            if (direction !== 'right') direction = 'left';
+            break;
+        case 'ArrowRight':
+            if (direction !== 'left') direction = 'right';
+            break;
+    }
+});
+
+// Основной игровой цикл
+function gameLoop() {
+    // Вычислить новое положение головы змейки
+    const head = { ...snake[0] };
+
+    switch (direction) {
+        case 'up':
+            head.y -= blockSize;
+            break;
+        case 'down':
+            head.y += blockSize;
+            break;
+        case 'left':
+            head.x -= blockSize;
+            break;
+        case 'right':
+            head.x += blockSize;
+            break;
+    }
+
+    // Проверка на столкновение с краем поля
+    if (head.x < 0 || head.x >= gameSize || head.y < 0 || head.y >= gameSize) {
+        alert('Game Over! Your score: ' + score);
+        resetGame();
+        return;
+    }
+
+    // Проверка на столкновение с телом змейки
+    for (let i = 0; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+            alert('Game Over! Your score: ' + score);
+            resetGame();
+            return;
+        }
+    }
+
+    // Проверка на съеденную еду
+    if (head.x === food.x && head.y === food.y) {
+        score += 10; // Увеличение счета
+        generateFood();
+    } else {
+        snake.pop(); // Удаление последнего сегмента змейки
+    }
+
+    // Добавление нового сегмента змейки
+    snake.unshift(head);
+
+    drawSnake();
+    drawFood();
+}
+
+// Функция для сброса игры
+function resetGame() {
+    snake = [
+        { x: 160, y: 160 },
+    ];
+    direction = 'right';
+    score = 0;
+    generateFood();
+}
+
+// Инициализация игры
+createGameBoard();
+generateFood();
+setInterval(gameLoop, 200); // Запуск игрового цикла с интервалом 200 мс
