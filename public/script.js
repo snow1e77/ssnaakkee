@@ -2,6 +2,7 @@
 const gameContainer = document.getElementById('gameContainer');
 const currentScoreDisplay = document.getElementById('currentScore');
 const highScoreDisplay = document.getElementById('highScore');
+const startButton = document.getElementById('startButton');
 const gameSize = 400;
 const blockSize = 20;
 const gridCount = gameSize / blockSize;
@@ -14,7 +15,7 @@ let score = 0;
 let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
 let isPaused = false; // Флаг для паузы
 let gameIntervalSpeed = 100; // Скорость игры
-let gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+let gameInterval;
 
 // Обновляем отображение счёта и лучшего результата
 function updateScoreDisplay() {
@@ -68,16 +69,9 @@ function generateFood() {
 
 // Обработка нажатия клавиш для управления змейкой
 document.addEventListener('keydown', (event) => {
+    if (isPaused) return; // Игнорируем ввод, если игра на паузе
+
     switch (event.key) {
-        case 'p': // Нажатие клавиши 'p' для паузы/возобновления
-            if (isPaused) {
-                isPaused = false;
-                gameInterval = setInterval(gameLoop, gameIntervalSpeed);
-            } else {
-                isPaused = true;
-                clearInterval(gameInterval);
-            }
-            break;
         case 'ArrowUp':
             if (direction !== 'down') direction = 'up';
             break;
@@ -149,9 +143,17 @@ function resetGame() {
     generateFood();
     clearInterval(gameInterval);
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+    isPaused = false;
 }
 
-// Инициализация игры
-createGameBoard();
-generateFood();
-updateScoreDisplay();
+// Функция для начала игры
+startButton.addEventListener('click', () => {
+    startButton.style.display = 'none'; // Скрыть кнопку при начале игры
+    createGameBoard();
+    generateFood();
+    updateScoreDisplay();
+    gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+});
+
+// Инициализация игры при загрузке страницы
+startButton.style.display = 'block';
