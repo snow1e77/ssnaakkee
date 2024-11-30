@@ -162,15 +162,15 @@
             }
         }
 
-        // Обработчики для кнопок на мобильных устройствах
-        document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
-        document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
-        document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
-        document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
-
-        // Добавляем слушатель для клавиатуры, только на компьютерах
-        if (window.matchMedia("(min-width: 768px)").matches) {
+        // Проверка, если игра открыта в десктопной версии Telegram
+        if (navigator.userAgent.includes("TelegramDesktop")) {
             document.addEventListener("keydown", handleKeydown);
+        } else {
+            document.querySelector(".controls").style.display = "flex";
+            document.getElementById("up").addEventListener("click", () => handleButtonClick("up"));
+            document.getElementById("down").addEventListener("click", () => handleButtonClick("down"));
+            document.getElementById("left").addEventListener("click", () => handleButtonClick("left"));
+            document.getElementById("right").addEventListener("click", () => handleButtonClick("right"));
         }
 
         document.getElementById("restartGame").addEventListener("click", initializeGame);
