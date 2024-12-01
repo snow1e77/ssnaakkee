@@ -5,29 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas"></canvas>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
         <div id="gameControls">
             <button id="startButton">Start Game</button>
             <button id="pauseButton" style="display: none;">Pause</button>
             <button id="continueButton" style="display: none;">Continue</button>
             <button id="restartButton" style="display: none;">Restart</button>
-            <div id="difficultyContainer">
-                <label for="difficultySelect">Difficulty:</label>
-                <select id="difficultySelect">
-                    <option value="easy">Easy</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
         </div>
         <div id="scoreDisplay">
             <span id="score">Score: 0</span>
             <span id="highScore">High Score: 0</span>
         </div>
-        <div id="gameOverMessage" style="display: none;"></div>
+        <div id="gameOverMessage" style="display: none;">Game Over!</div>
     </div>
     <script src="script.js"></script>
 </body>
