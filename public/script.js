@@ -1,11 +1,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const startButton = document.getElementById('startButton');
-const pauseButton = document.getElementById('pauseButton');
-const resumeButton = document.getElementById('resumeButton');
-const restartButton = document.getElementById('restartButton');
-const currentScoreDisplay = document.getElementById('currentScore');
-const highScoreDisplay = document.getElementById('highScore');
+const snakeImage = new Image();
+const foodImage = new Image();
+snakeImage.src = 'snake.png'; // Path to your snake image
+foodImage.src = 'food.png';   // Path to your food image
 
 const gridSize = 20;
 let snake = [];
@@ -13,21 +11,48 @@ let food = {};
 let direction = 'right';
 let newDirection = 'right';
 let score = 0;
-let highScore = 0;
 let gameInterval;
 let isPaused = false;
 
-function initGame() {
+document.getElementById('startButton').addEventListener('click', startGame);
+document.getElementById('pauseButton').addEventListener('click', pauseGame);
+document.getElementById('resumeButton').addEventListener('click', resumeGame);
+document.getElementById('newGameButton').addEventListener('click', newGame);
+
+function startGame() {
     canvas.width = 400;
     canvas.height = 400;
     snake = [{ x: 100, y: 100 }];
     direction = newDirection = 'right';
     score = 0;
-    currentScoreDisplay.textContent = score;
+    document.getElementById('score').textContent = score;
     placeFood();
-    clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 100);
-    showGameControls();
+    document.getElementById('controls').style.display = 'flex';
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('pauseButton').style.display = 'inline';
+    cancelAnimationFrame(gameInterval);
+    gameInterval = requestAnimationFrame(gameLoop);
+}
+
+function newGame() {
+    cancelAnimationFrame(gameInterval);
+    document.getElementById('gameOverMessage').style.display = 'none';
+    document.getElementById('controls').style.display = 'flex';
+    document.getElementById('pauseButton').style.display = 'inline';
+    startGame();
+}
+
+function pauseGame() {
+    isPaused = true;
+    document.getElementById('pauseButton').style.display = 'none';
+    document.getElementById('resumeButton').style.display = 'inline';
+}
+
+function resumeGame() {
+    isPaused = false;
+    document.getElementById('pauseButton').style.display = 'inline';
+    document.getElementById('resumeButton').style.display = 'none';
+    gameInterval = requestAnimationFrame(gameLoop);
 }
 
 function gameLoop() {
@@ -35,6 +60,7 @@ function gameLoop() {
         moveSnake();
         checkCollisions();
         updateCanvas();
+        gameInterval = requestAnimationFrame(gameLoop);
     }
 }
 
@@ -55,7 +81,7 @@ function moveSnake() {
 
     if (head.x === food.x && head.y === food.y) {
         score += 10;
-        currentScoreDisplay.textContent = score;
+        document.getElementById('score').textContent = score;
         placeFood();
     } else {
         snake.pop();
@@ -66,7 +92,6 @@ function moveSnake() {
 
 function checkCollisions() {
     const head = snake[0];
-    // Check for collisions with itself
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             gameOver();
@@ -75,49 +100,25 @@ function checkCollisions() {
     }
 }
 
+function updateCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    snake.forEach(segment => ctx.drawImage(snakeImage, segment.x, segment.y, gridSize, gridSize));
+    ctx.drawImage(foodImage, food.x, food.y, gridSize, gridSize);
+}
+
 function placeFood() {
     const x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
     const y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
     food = { x, y };
 }
 
-function updateCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'green';
-    snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, gridSize, gridSize);
-}
-
 function gameOver() {
-    clearInterval(gameInterval);
-    if (score > highScore) {
-        highScore = score;
-        highScoreDisplay.textContent = highScore;
-    }
-    alert('Game Over! Your score: ' + score);
+    cancelAnimationFrame(gameInterval);
+    document.getElementById('gameOverMessage').style.display = 'block';
+    document.getElementById('score').textContent = score;
+    document.getElementById('controls').style.display = 'none';
 }
 
-function showGameControls() {
-    startButton.style.display = 'none';
-    pauseButton.style.display = 'inline-block';
-    restartButton.style.display = 'inline-block';
-}
-
-startButton.addEventListener('click', initGame);
-pauseButton.addEventListener('click', () => {
-    isPaused = true;
-    pauseButton.style.display = 'none';
-    resumeButton.style.display = 'inline-block';
-});
-
-resumeButton.addEventListener('click', () => {
-    isPaused = false;
-    resumeButton.style.display = 'none';
-    pauseButton.style.display = 'inline-block';
-});
-
-restartButton.addEventListener('click', initGame);
 document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'ArrowUp': if (direction !== 'down') newDirection = 'up'; break;
@@ -125,5 +126,5 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowLeft': if (direction !== 'right') newDirection = 'left'; break;
         case 'ArrowRight': if (direction !== 'left') newDirection = 'right'; break;
     }
-    direction = newDirection; // Update direction after validation
+    direction = newDirection;
 });
