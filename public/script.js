@@ -8,7 +8,7 @@ let score = 0;
 let highScore = 0;
 let gameInterval;
 let isPaused = false;
-let gameSpeed = 200;
+let gameSpeed = 200; // Speed of the game in milliseconds
 
 // Event listeners for controls
 document.addEventListener('keydown', (event) => {
@@ -76,6 +76,7 @@ function moveSnake() {
 // Check for collisions with the snake itself
 function checkCollision() {
     let head = snake[0];
+    // Check if the head collides with any part of the body
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             endGame();
