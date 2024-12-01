@@ -1,18 +1,21 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const snakeImage = new Image();
-const foodImage = new Image();
-snakeImage.src = 'snake.png'; // Path to your snake image
-foodImage.src = 'food.png';   // Path to your food image
-
+canvas.width = 400;
+canvas.height = 400;
 const gridSize = 20;
-let snake = [];
-let food = {};
+let snake = [{ x: 160, y: 160 }];
 let direction = 'right';
 let newDirection = 'right';
+let food = {};
 let score = 0;
 let gameInterval;
 let isPaused = false;
+
+// Load images for the snake and food
+const snakeImage = new Image();
+const foodImage = new Image();
+snakeImage.src = 'snake.png'; // Path to the snake image
+foodImage.src = 'food.png';   // Path to the food image
 
 document.getElementById('startButton').addEventListener('click', startGame);
 document.getElementById('pauseButton').addEventListener('click', pauseGame);
@@ -20,9 +23,7 @@ document.getElementById('resumeButton').addEventListener('click', resumeGame);
 document.getElementById('newGameButton').addEventListener('click', newGame);
 
 function startGame() {
-    canvas.width = 400;
-    canvas.height = 400;
-    snake = [{ x: 100, y: 100 }];
+    snake = [{ x: 160, y: 160 }];
     direction = newDirection = 'right';
     score = 0;
     document.getElementById('score').textContent = score;
@@ -30,6 +31,7 @@ function startGame() {
     document.getElementById('controls').style.display = 'flex';
     document.getElementById('startButton').style.display = 'none';
     document.getElementById('pauseButton').style.display = 'inline';
+    document.getElementById('gameOverMessage').style.display = 'none';
     cancelAnimationFrame(gameInterval);
     gameInterval = requestAnimationFrame(gameLoop);
 }
