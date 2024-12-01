@@ -5,6 +5,9 @@ canvas.height = 400;
 
 const startButton = document.getElementById('startButton');
 const pauseButton = document.getElementById('pauseButton');
+const pauseMenu = document.getElementById('pauseMenu');
+const continueButton = document.getElementById('continueButton');
+const newGameButton = document.getElementById('newGameButton');
 const difficultySelector = document.getElementById('difficulty');
 const gameOverModal = document.getElementById('gameOverModal');
 const restartButton = document.getElementById('restartButton');
@@ -95,9 +98,11 @@ function resetGame() {
     currentScoreSpan.textContent = `Счёт: ${currentScore}`;
     generateFood();
     gameOverModal.style.display = 'none';
+    pauseMenu.style.display = 'none';
     isGameRunning = false;
     isPaused = false;
-    pauseButton.textContent = 'Пауза';
+    pauseButton.style.display = 'none';
+    startButton.style.display = 'block';
 }
 
 function gameLoop() {
@@ -127,22 +132,26 @@ startButton.addEventListener('click', () => {
 });
 
 pauseButton.addEventListener('click', () => {
-    if (!isGameRunning) return; // Ignore if game is not running
-    if (!isPaused) {
-        clearInterval(gameInterval);
-        pauseButton.textContent = 'Продолжить';
-        isPaused = true;
-    } else {
-        gameInterval = setInterval(gameLoop, gameIntervalSpeed);
-        pauseButton.textContent = 'Пауза';
-        isPaused = false;
-    }
+    if (!isGameRunning) return;
+    isPaused = true;
+    clearInterval(gameInterval);
+    pauseMenu.style.display = 'block';
+});
+
+continueButton.addEventListener('click', () => {
+    isPaused = false;
+    pauseMenu.style.display = 'none';
+    gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+});
+
+newGameButton.addEventListener('click', () => {
+    resetGame();
+    pauseMenu.style.display = 'none';
 });
 
 restartButton.addEventListener('click', () => {
     resetGame();
     gameIntervalSpeed = speeds[difficultySelector.value];
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
-    pauseButton.style.display = 'block';
     difficultySelector.disabled = true;
 });
