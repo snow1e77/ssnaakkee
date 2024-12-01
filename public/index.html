@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snake Game</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="gameContainer">
-    <canvas id="gameCanvas"></canvas>
-    <div id="score">Score: 0</div>
-    <div id="pauseOverlay" style="display: none;">
-      <button id="resumeBtn">Resume</button>
-      <button id="restartBtn">New Game</button>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="300" height="300"></canvas>
+        <div class="controls">
+            <button id="startGameButton">Start Game</button>
+            <button id="pauseButton" style="display: none;">Pause</button>
+            <button id="resumeButton" style="display: none;">Resume</button>
+        </div>
+        <p id="scoreDisplay">Score: 0</p>
     </div>
-  </div>
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
