@@ -5,27 +5,18 @@ body {
     height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
 }
 
-#gameContainer {
+.game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 canvas {
-    border: 3px solid #333;
-    background-color: #e0e0e0;
-}
-
-#controls {
-    margin-top: 20px;
+    border: 2px solid black;
 }
 
 button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+    margin-top: 10px;
 }
