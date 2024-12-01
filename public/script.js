@@ -146,6 +146,7 @@ continueButton.addEventListener('click', () => {
 
 newGameButton.addEventListener('click', () => {
     resetGame();
+    difficultySelector.disabled = false; // Re-enable difficulty selector for new game
     pauseMenu.style.display = 'none';
 });
 
