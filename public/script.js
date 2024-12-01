@@ -76,7 +76,6 @@ function moveSnake() {
 // Check for collisions with the snake itself
 function checkCollision() {
     let head = snake[0];
-    // Check if the head collides with any part of the body
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             endGame();
@@ -133,13 +132,13 @@ function resumeGame() {
     }
 }
 
-// End the game
+// End the game and display "Game Over"
 function endGame() {
     clearTimeout(gameInterval);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'black';
     ctx.font = '20px Arial';
-    ctx.fillText(`Game Over! Final Score: ${score}`, canvas.width / 2 - 50, canvas.height / 2);
+    ctx.fillText(`Game Over! Final Score: ${score}`, canvas.width / 2 - 70, canvas.height / 2);
     document.getElementById('pauseButton').style.display = 'none';
     document.getElementById('resumeButton').style.display = 'none';
     document.getElementById('newGameButton').style.display = 'inline-block';
