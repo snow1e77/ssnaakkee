@@ -18,8 +18,9 @@ let food = { x: 15, y: 15 };
 let currentScore = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let gameInterval;
-let gameIntervalSpeed = 100; // Default speed
+let gameIntervalSpeed = 100;
 let isPaused = false;
+let isGameRunning = false;
 
 const speeds = { easy: 150, medium: 100, hard: 50 };
 
@@ -44,7 +45,6 @@ function drawFood() {
 function updateSnake() {
     const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-    // Wrap around edges
     if (head.x < 0) head.x = canvas.width / 20 - 1;
     if (head.x >= canvas.width / 20) head.x = 0;
     if (head.y < 0) head.y = canvas.height / 20 - 1;
@@ -52,7 +52,6 @@ function updateSnake() {
 
     snake.unshift(head);
 
-    // Check for food collision
     if (head.x === food.x && head.y === food.y) {
         currentScore++;
         currentScoreSpan.textContent = `Счёт: ${currentScore}`;
@@ -61,7 +60,6 @@ function updateSnake() {
         snake.pop();
     }
 
-    // Check for self-collision
     for (let i = 1; i < snake.length; i++) {
         if (snake[i].x === head.x && snake[i].y === head.y) {
             endGame();
@@ -78,6 +76,9 @@ function generateFood() {
 
 function endGame() {
     clearInterval(gameInterval);
+    isGameRunning = false;
+    isPaused = false;
+    difficultySelector.disabled = false;
     if (currentScore > highScore) {
         highScore = currentScore;
         localStorage.setItem('highScore', highScore);
@@ -94,6 +95,9 @@ function resetGame() {
     currentScoreSpan.textContent = `Счёт: ${currentScore}`;
     generateFood();
     gameOverModal.style.display = 'none';
+    isGameRunning = false;
+    isPaused = false;
+    pauseButton.textContent = 'Пауза';
 }
 
 function gameLoop() {
@@ -105,7 +109,6 @@ function gameLoop() {
     }
 }
 
-// Event listeners
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -1 };
     if (e.key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 1 };
@@ -116,18 +119,27 @@ document.addEventListener('keydown', e => {
 startButton.addEventListener('click', () => {
     resetGame();
     gameIntervalSpeed = speeds[difficultySelector.value];
+    difficultySelector.disabled = true;
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+    isGameRunning = true;
     startButton.style.display = 'none';
     pauseButton.style.display = 'block';
 });
 
 pauseButton.addEventListener('click', () => {
+    if (!isGameRunning) return; // Ignore if game is not running
     isPaused = !isPaused;
-    pauseButton.textContent = isPaused ? 'Продолжить' : 'Пауза';
+    pauseButton.textContent = isPaused ? 'Новая игра' : 'Пауза';
+    if (isPaused) {
+        clearInterval(gameInterval);
+    } else {
+        gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+    }
 });
 
 restartButton.addEventListener('click', () => {
     resetGame();
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
     pauseButton.style.display = 'block';
+    difficultySelector.disabled = true;
 });
