@@ -1,71 +1,49 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  margin: 0;
+  height: 100vh;
+  font-family: 'Arial', sans-serif;
 }
 
 #gameContainer {
-    position: relative;
-    text-align: center;
+  position: relative;
 }
 
 #gameCanvas {
-    border: 2px solid #333;
-    display: block;
-    margin: 0 auto;
-    background-color: #fff;
+  border: 2px solid #333;
+  background-color: #e8e8e8;
 }
 
-#controls {
-    margin-top: 15px;
+#score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+#pauseOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
 }
 
-#gameOverMessage {
-    display: none;
-    font-size: 24px;
-    color: red;
-    text-align: center;
-    margin-top: 20px;
-}
-
-
-button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-#gameOverMessage {
-    display: none;
-    font-size: 24px;
-    color: red;
-    text-align: center;
-    animation: bounce 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes bounce {
-    0% { transform: translateY(0); }
-    30% { transform: translateY(-10px); }
-    50% { transform: translateY(0); }
-    100% { transform: translateY(0); }
+#pauseOverlay button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: #fff;
 }
