@@ -128,17 +128,20 @@ startButton.addEventListener('click', () => {
 
 pauseButton.addEventListener('click', () => {
     if (!isGameRunning) return; // Ignore if game is not running
-    isPaused = !isPaused;
-    pauseButton.textContent = isPaused ? 'Новая игра' : 'Пауза';
-    if (isPaused) {
+    if (!isPaused) {
         clearInterval(gameInterval);
+        pauseButton.textContent = 'Продолжить';
+        isPaused = true;
     } else {
         gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+        pauseButton.textContent = 'Пауза';
+        isPaused = false;
     }
 });
 
 restartButton.addEventListener('click', () => {
     resetGame();
+    gameIntervalSpeed = speeds[difficultySelector.value];
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
     pauseButton.style.display = 'block';
     difficultySelector.disabled = true;
