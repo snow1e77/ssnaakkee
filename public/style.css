@@ -1,49 +1,25 @@
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f0f0;
-  margin: 0;
-  height: 100vh;
-  font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
 }
 
-#gameContainer {
-  position: relative;
+.game-container {
+    text-align: center;
 }
 
-#gameCanvas {
-  border: 2px solid #333;
-  background-color: #e8e8e8;
+canvas {
+    border: 2px solid black;
 }
 
-#score {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 24px;
-  font-weight: bold;
+.controls {
+    margin-top: 10px;
 }
 
-#pauseOverlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 20px;
-  border-radius: 10px;
-  color: #fff;
-  text-align: center;
-}
-
-#pauseOverlay button {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background-color: #28a745;
-  color: #fff;
+button {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
 }
