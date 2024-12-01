@@ -39,6 +39,7 @@ function newGame() {
     document.getElementById('startGameButton').style.display = 'none';
     document.getElementById('newGameButton').style.display = 'none';
     document.getElementById('scoreDisplay').innerText = `Score: ${score}`;
+    document.getElementById('highScoreDisplay').innerText = `High Score: ${highScore}`;
     placeFood();
     gameLoop();
 }
@@ -47,7 +48,10 @@ function newGame() {
 function gameLoop() {
     if (isPaused) return;
     moveSnake();
-    checkCollision();
+    if (checkCollision()) {
+        endGame();
+        return;
+    }
     checkFood();
     drawGame();
     gameInterval = setTimeout(gameLoop, gameSpeed);
@@ -78,9 +82,10 @@ function checkCollision() {
     let head = snake[0];
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
-            endGame();
+            return true;
         }
     }
+    return false;
 }
 
 // Check if the snake eats the food
