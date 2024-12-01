@@ -5,6 +5,7 @@ let snake = [{ x: 5, y: 5 }];
 let snakeDirection = 'right';
 let food = { x: 10, y: 10 };
 let score = 0;
+let highScore = 0;
 let gameInterval;
 let isPaused = false;
 let gameSpeed = 200;
@@ -22,14 +23,10 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-document.getElementById('startGameButton').addEventListener('click', () => {
-    if (!isPaused) {
-        newGame();
-    }
-});
-
+document.getElementById('startGameButton').addEventListener('click', newGame);
 document.getElementById('pauseButton').addEventListener('click', pauseGame);
 document.getElementById('resumeButton').addEventListener('click', resumeGame);
+document.getElementById('newGameButton').addEventListener('click', newGame);
 
 // Initialize the game state
 function newGame() {
@@ -40,6 +37,7 @@ function newGame() {
     document.getElementById('pauseButton').style.display = 'inline-block';
     document.getElementById('resumeButton').style.display = 'none';
     document.getElementById('startGameButton').style.display = 'none';
+    document.getElementById('newGameButton').style.display = 'none';
     document.getElementById('scoreDisplay').innerText = `Score: ${score}`;
     placeFood();
     gameLoop();
@@ -90,7 +88,9 @@ function checkFood() {
     let head = snake[0];
     if (head.x === food.x && head.y === food.y) {
         score += 10;
+        if (score > highScore) highScore = score;
         document.getElementById('scoreDisplay').innerText = `Score: ${score}`;
+        document.getElementById('highScoreDisplay').innerText = `High Score: ${highScore}`;
         placeFood();
         snake.push({});
     }
@@ -141,5 +141,5 @@ function endGame() {
     ctx.fillText(`Game Over! Final Score: ${score}`, canvas.width / 2 - 50, canvas.height / 2);
     document.getElementById('pauseButton').style.display = 'none';
     document.getElementById('resumeButton').style.display = 'none';
-    document.getElementById('startGameButton').style.display = 'inline-block';
+    document.getElementById('newGameButton').style.display = 'inline-block';
 }
