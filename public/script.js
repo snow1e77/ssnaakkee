@@ -136,11 +136,13 @@ pauseButton.addEventListener('click', () => {
     isPaused = true;
     clearInterval(gameInterval);
     pauseMenu.style.display = 'block';
+    pauseButton.style.display = 'none'; // Hide pause button
 });
 
 continueButton.addEventListener('click', () => {
     isPaused = false;
     pauseMenu.style.display = 'none';
+    pauseButton.style.display = 'block'; // Show pause button
     gameInterval = setInterval(gameLoop, gameIntervalSpeed);
 });
 
