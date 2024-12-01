@@ -1,123 +1,67 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 600;
-    canvas.height = 400;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const gridSize = 20;
+let snake = [{ x: 160, y: 160 }];
+let snakeDirection = 'right';
+let gameInterval;
+let isPaused = false;
 
-    const gridSize = 20;
-    let snake = [{ x: 100, y: 100 }];
-    let food = { x: 200, y: 200 };
-    let direction = 'right';
-    let gameInterval;
-    let isPaused = false;
+function drawSnake() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'green';
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+    });
+}
 
-    const startButton = document.getElementById('startButton');
-    const pauseButton = document.getElementById('pauseButton');
-    const resumeButton = document.getElementById('resumeButton');
+function moveSnake() {
+    if (isPaused) return;
 
-    startButton.addEventListener('click', startGame);
-    pauseButton.addEventListener('click', pauseGame);
-    resumeButton.addEventListener('click', resumeGame);
+    const head = { ...snake[0] };
 
-    function startGame() {
-        resetGame();
-        gameInterval = setInterval(() => {
-            if (!isPaused) {
-                moveSnake();
-                checkCollision();
-                drawGame();
-            }
-        }, 100);
-        startButton.style.display = 'none';
-        pauseButton.style.display = 'inline-block';
+    switch (snakeDirection) {
+        case 'up': head.y -= gridSize; break;
+        case 'down': head.y += gridSize; break;
+        case 'left': head.x -= gridSize; break;
+        case 'right': head.x += gridSize; break;
     }
 
-    function pauseGame() {
+    // Check for collisions with the canvas boundaries
+    if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || isCollidingWithBody(head)) {
+        alert('Game Over');
+        clearInterval(gameInterval);
+        return;
+    }
+
+    snake.unshift(head);
+    snake.pop();
+    drawSnake();
+}
+
+function isCollidingWithBody(head) {
+    return snake.some(segment => segment.x === head.x && segment.y === head.y);
+}
+
+function startGame() {
+    gameInterval = setInterval(moveSnake, 200);
+}
+
+document.getElementById('pauseButton').addEventListener('click', () => {
+    if (!isPaused) {
         isPaused = true;
-        pauseButton.style.display = 'none';
-        resumeButton.style.display = 'inline-block';
-    }
-
-    function resumeGame() {
-        isPaused = false;
-        resumeButton.style.display = 'none';
-        pauseButton.style.display = 'inline-block';
-    }
-
-    function resetGame() {
-        snake = [{ x: 100, y: 100 }];
-        direction = 'right';
-        food = { x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize, y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize };
         clearInterval(gameInterval);
-    }
-
-    function moveSnake() {
-        const head = { ...snake[0] };
-        if (direction === 'right') head.x += gridSize;
-        if (direction === 'left') head.x -= gridSize;
-        if (direction === 'up') head.y -= gridSize;
-        if (direction === 'down') head.y += gridSize;
-
-        // Check for collision with the food
-        if (head.x === food.x && head.y === food.y) {
-            snake.unshift(head);
-            placeNewFood();
-        } else {
-            snake.pop();
-            snake.unshift(head);
-        }
-    }
-
-    function placeNewFood() {
-        food = { x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize, y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize };
-    }
-
-    function drawGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Animate snake movement using anime.js
-        anime({
-            targets: snake,
-            x: (el) => el.x,
-            y: (el) => el.y,
-            easing: 'linear',
-            duration: 100,
-            update: function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = 'green';
-                snake.forEach(part => {
-                    ctx.fillRect(part.x, part.y, gridSize, gridSize);
-                });
-
-                ctx.fillStyle = 'red';
-                ctx.fillRect(food.x, food.y, gridSize, gridSize);
-            }
-        });
-    }
-
-    function checkCollision() {
-        const head = snake[0];
-
-        // Collision with walls (wrap around effect)
-        if (head.x < 0) head.x = canvas.width - gridSize;
-        if (head.x >= canvas.width) head.x = 0;
-        if (head.y < 0) head.y = canvas.height - gridSize;
-        if (head.y >= canvas.height) head.y = 0;
-
-        // Collision with itself
-        for (let i = 1; i < snake.length; i++) {
-            if (head.x === snake[i].x && head.y === snake[i].y) {
-                endGame();
-            }
-        }
-    }
-
-    function endGame() {
-        clearInterval(gameInterval);
-        alert('Игра окончена!');
-        startButton.style.display = 'inline-block';
-        pauseButton.style.display = 'none';
-        resumeButton.style.display = 'none';
+        document.getElementById('pauseButton').style.display = 'none';
+        document.getElementById('resumeButton').style.display = 'inline-block';
     }
 });
+
+document.getElementById('resumeButton').addEventListener('click', () => {
+    if (isPaused) {
+        isPaused = false;
+        gameInterval = setInterval(moveSnake, 200);
+        document.getElementById('resumeButton').style.display = 'none';
+        document.getElementById('pauseButton').style.display = 'inline-block';
+    }
+});
+
+startGame();
