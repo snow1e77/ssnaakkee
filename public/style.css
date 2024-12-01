@@ -1,54 +1,55 @@
 body {
-    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
     background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
 }
 
-#game-container {
+#gameContainer {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
 }
 
 #gameCanvas {
     border: 2px solid #333;
-    background-image: url('https://i.imgur.com/XHWmP3v.png'); /* Add your background image URL */
-    background-size: cover;
-    width: 400px;
-    height: 400px;
+    display: block;
+    margin: 0 auto;
+    animation: fadeIn 1s ease-in-out;
 }
 
 #controls {
     margin-top: 15px;
-    display: flex;
-    gap: 10px;
 }
 
 button {
+    margin: 5px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    transition: background-color 0.3s;
 }
 
-button:hover {
-    background-color: #45a049;
-}
-
-button[style*="display:none"] {
+#gameOverMessage {
     display: none;
+    font-size: 24px;
+    color: red;
+    text-align: center;
+    animation: bounce 0.5s ease-in-out;
 }
 
-#score-board {
-    margin-top: 20px;
-    text-align: center;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    30% { transform: translateY(-10px); }
+    50% { transform: translateY(0); }
+    100% { transform: translateY(0); }
 }
