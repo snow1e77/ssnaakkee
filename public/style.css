@@ -16,12 +16,28 @@ body {
     border: 2px solid #333;
     display: block;
     margin: 0 auto;
-    animation: fadeIn 1s ease-in-out;
+    background-color: #fff;
 }
 
 #controls {
     margin-top: 15px;
 }
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#gameOverMessage {
+    display: none;
+    font-size: 24px;
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+}
+
 
 button {
     margin: 5px;
