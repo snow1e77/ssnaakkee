@@ -29,10 +29,6 @@ button {
     cursor: pointer;
 }
 
-#difficultyContainer {
-    margin-top: 10px;
-}
-
 #scoreDisplay {
     margin-top: 10px;
     font-size: 18px;
