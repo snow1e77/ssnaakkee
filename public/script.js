@@ -153,13 +153,12 @@ function resetGame() {
 
 // Функция для начала игры
 startButton.addEventListener('click', () => {
+    resetGame(); // Ensure the game resets and starts immediately
     startButton.style.display = 'none';
     pauseButton.style.display = 'block';
-    createGameBoard();
-    generateFood();
-    updateScoreDisplay();
-    gameInterval = setInterval(gameLoop, gameIntervalSpeed);
+    gameInterval = setInterval(gameLoop, gameIntervalSpeed); // Start the game loop
 });
+
 
 // Функция для паузы игры
 pauseButton.addEventListener('click', () => {
