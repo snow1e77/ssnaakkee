@@ -74,13 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawGame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'green';
-        snake.forEach(part => {
-            ctx.fillRect(part.x, part.y, gridSize, gridSize);
-        });
+        // Animate snake movement using anime.js
+        anime({
+            targets: snake,
+            x: (el) => el.x,
+            y: (el) => el.y,
+            easing: 'linear',
+            duration: 100,
+            update: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'red';
-        ctx.fillRect(food.x, food.y, gridSize, gridSize);
+                ctx.fillStyle = 'green';
+                snake.forEach(part => {
+                    ctx.fillRect(part.x, part.y, gridSize, gridSize);
+                });
+
+                ctx.fillStyle = 'red';
+                ctx.fillRect(food.x, food.y, gridSize, gridSize);
+            }
+        });
     }
 
     function checkCollision() {
