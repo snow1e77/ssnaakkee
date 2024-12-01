@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (direction === 'up') head.y -= gridSize;
         if (direction === 'down') head.y += gridSize;
 
+        // Check for collision with the food
         if (head.x === food.x && head.y === food.y) {
             snake.unshift(head);
             placeNewFood();
@@ -98,10 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkCollision() {
         const head = snake[0];
 
-        // Collision with walls
-        if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-            endGame();
-        }
+        // Collision with walls (wrap around effect)
+        if (head.x < 0) head.x = canvas.width - gridSize;
+        if (head.x >= canvas.width) head.x = 0;
+        if (head.y < 0) head.y = canvas.height - gridSize;
+        if (head.y >= canvas.height) head.y = 0;
 
         // Collision with itself
         for (let i = 1; i < snake.length; i++) {
