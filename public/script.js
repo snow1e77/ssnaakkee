@@ -26,7 +26,6 @@ function moveSnake() {
         case 'right': head.x += gridSize; break;
     }
 
-    // Check for collisions with the canvas boundaries
     if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || isCollidingWithBody(head)) {
         alert('Game Over');
         clearInterval(gameInterval);
@@ -44,6 +43,8 @@ function isCollidingWithBody(head) {
 
 function startGame() {
     gameInterval = setInterval(moveSnake, 200);
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('pauseButton').style.display = 'inline-block';
 }
 
 document.getElementById('pauseButton').addEventListener('click', () => {
@@ -64,4 +65,8 @@ document.getElementById('resumeButton').addEventListener('click', () => {
     }
 });
 
-startGame();
+document.getElementById('startButton').addEventListener('click', startGame);
+
+// Инициализация кнопок при загрузке страницы
+document.getElementById('pauseButton').style.display = 'none';
+document.getElementById('resumeButton').style.display = 'none';
