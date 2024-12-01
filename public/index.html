@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра в Змейку</title>
+    <title>Snake Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="gameContainer"></div>
-    <button id="startButton">Начать игру</button>
-    <button id="pauseButton" style="display: none;">Пауза</button>
-    <div id="scoreDisplay">
-        <span>Текущий счёт: <span id="currentScore">0</span></span>
-        <span>Лучший результат: <span id="highScore">0</span></span>
-    </div>
-    <!-- Modal dialog for game over -->
-    <div id="gameOverModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Игра окончена!</h2>
-            <p>Ваш счёт: <span id="finalScore"></span></p>
-            <button id="restartButton">Начать заново</button>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="scoreBoard">
+            <span id="currentScore">Счёт: 0</span>
+            <span id="highScore">Лучший результат: 0</span>
         </div>
+        <div id="difficultySelector">
+            <label for="difficulty">Сложность:</label>
+            <select id="difficulty">
+                <option value="easy">Лёгкий</option>
+                <option value="medium" selected>Средний</option>
+                <option value="hard">Сложный</option>
+            </select>
+        </div>
+        <button id="startButton">Начать игру</button>
+        <button id="pauseButton">Пауза</button>
+    </div>
+    <div id="gameOverModal">
+        <h2>Игра окончена!</h2>
+        <p id="finalScore"></p>
+        <button id="restartButton">Начать заново</button>
     </div>
     <script src="script.js"></script>
 </body>
