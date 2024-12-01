@@ -1,59 +1,40 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #282c34;
-    color: #fff;
-    margin: 0;
-}
-
-#gameContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
-}
-
-canvas {
-    border: 2px solid #fff;
-    background-image: url('https://i.imgur.com/XHWmP3v.png');
-    background-size: cover;
-}
-
-#scoreBoard {
-    display: flex;
-    justify-content: space-between;
-    width: 300px;
-    margin: 10px 0;
-    font-size: 18px;
-}
-
-#difficultySelector {
-    margin: 10px 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
-    cursor: pointer;
-    background-color: #61dafb;
+    background-color: #4CAF50;
+    color: white;
     border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
     border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #21a1f1;
+    background-color: #45a049;
 }
 
-#gameOverModal {
+#instructions {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.9);
     padding: 20px;
-    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    z-index: 10;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#instructions.visible {
+    display: block;
 }
