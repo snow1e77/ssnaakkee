@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Игра в Змейку</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div id="gameControls">
-            <button id="startButton">Start Game</button>
-            <button id="pauseButton" style="display: none;">Pause</button>
-            <button id="continueButton" style="display: none;">Continue</button>
-            <button id="restartButton" style="display: none;">Restart</button>
+        <canvas id="gameCanvas"></canvas>
+        <div class="controls">
+            <button id="startButton">Начать игру</button>
+            <button id="pauseButton" style="display: none;">Пауза</button>
+            <button id="resumeButton" style="display: none;">Продолжить</button>
         </div>
-        <div id="scoreDisplay">
-            <span id="score">Score: 0</span>
-            <span id="highScore">High Score: 0</span>
-        </div>
-        <div id="gameOverMessage" style="display: none;">Game Over!</div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
