@@ -47,6 +47,12 @@ function moveSnake() {
         case 'right': head.x += gridSize; break;
     }
 
+    // Wrap the snake around the canvas edges
+    if (head.x < 0) head.x = canvas.width - gridSize;
+    if (head.y < 0) head.y = canvas.height - gridSize;
+    if (head.x >= canvas.width) head.x = 0;
+    if (head.y >= canvas.height) head.y = 0;
+
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         currentScoreDisplay.textContent = score;
@@ -60,11 +66,12 @@ function moveSnake() {
 
 function checkCollisions() {
     const head = snake[0];
-    if (
-        head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height ||
-        snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
-    ) {
-        gameOver();
+    // Check for collisions with itself
+    for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+            gameOver();
+            return;
+        }
     }
 }
 
@@ -118,4 +125,5 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowLeft': if (direction !== 'right') newDirection = 'left'; break;
         case 'ArrowRight': if (direction !== 'left') newDirection = 'right'; break;
     }
+    direction = newDirection; // Update direction after validation
 });
