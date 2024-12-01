@@ -1,174 +1,117 @@
-// Game elements
-const gameCanvas = document.getElementById('gameCanvas');
-const context = gameCanvas.getContext('2d');
-const gameOverMessage = document.getElementById('gameOverMessage');
-const startButton = document.getElementById('startButton');
-const pauseButton = document.getElementById('pauseButton');
-const continueButton = document.getElementById('continueButton');
-const restartButton = document.getElementById('restartButton');
-const difficultySelect = document.getElementById('difficultySelect');
-
-let snake = [{ x: 150, y: 150 }];
-let snakeDirection = 'right';
-let food = {};
-let gameInterval;
-let gameRunning = false;
+// Basic setup for the game canvas and context
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const cellSize = 20;
+let snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }];
+let direction = 'right';
+let food = { x: 200, y: 200 };
 let score = 0;
-let highScore = 0;
-let currentSpeed = 150; // Default speed for medium difficulty
+let gameInterval;
+let isPaused = false;
 
-// Canvas size
-gameCanvas.width = 400;
-gameCanvas.height = 400;
+// Start button and event listener
+document.getElementById('startButton').addEventListener('click', startGame);
+document.getElementById('pauseButton').addEventListener('click', togglePause);
+document.getElementById('continueButton').addEventListener('click', togglePause);
+document.getElementById('restartButton').addEventListener('click', startGame);
 
-// Function to start the game
-function startGame() {
-    if (gameRunning) return; // Prevent starting if the game is already running
+// Draw the snake and the food on the canvas
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'green';
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x, segment.y, cellSize, cellSize);
+    });
 
-    gameRunning = true;
-    gameOverMessage.style.display = 'none';
-    score = 0;
-    snake = [{ x: 150, y: 150 }];
-    snakeDirection = 'right';
-    generateFood();
-
-    // Show/hide buttons as needed
-    startButton.style.display = 'none';
-    pauseButton.style.display = 'block';
-    restartButton.style.display = 'none';
-    continueButton.style.display = 'none';
-
-    gameInterval = setInterval(() => {
-        if (gameRunning) {
-            moveSnake();
-            checkCollision();
-            drawGame();
-        }
-    }, currentSpeed);
+    ctx.fillStyle = 'red';
+    ctx.fillRect(food.x, food.y, cellSize, cellSize);
 }
 
-// Function to move the snake
-function moveSnake() {
-    const head = { ...snake[0] };
+// Update the snake's position based on the current direction
+function updateGame() {
+    if (isPaused) return;
 
-    if (snakeDirection === 'up') head.y -= 10;
-    if (snakeDirection === 'down') head.y += 10;
-    if (snakeDirection === 'left') head.x -= 10;
-    if (snakeDirection === 'right') head.x += 10;
+    let newHead = { ...snake[0] };
 
-    // Wrap around logic for canvas edges
-    if (head.x < 0) head.x = gameCanvas.width - 10;
-    if (head.x >= gameCanvas.width) head.x = 0;
-    if (head.y < 0) head.y = gameCanvas.height - 10;
-    if (head.y >= gameCanvas.height) head.y = 0;
+    switch (direction) {
+        case 'right': newHead.x += cellSize; break;
+        case 'left': newHead.x -= cellSize; break;
+        case 'up': newHead.y -= cellSize; break;
+        case 'down': newHead.y += cellSize; break;
+    }
 
-    snake.unshift(head);
-    if (head.x === food.x && head.y === food.y) {
-        score++;
-        generateFood();
+    // Wrap the snake around if it hits the canvas border
+    if (newHead.x < 0) newHead.x = canvas.width - cellSize;
+    if (newHead.y < 0) newHead.y = canvas.height - cellSize;
+    if (newHead.x >= canvas.width) newHead.x = 0;
+    if (newHead.y >= canvas.height) newHead.y = 0;
+
+    // Check for collisions with itself
+    if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
+        clearInterval(gameInterval);
+        document.getElementById('gameOverMessage').style.display = 'block';
+        return;
+    }
+
+    snake.unshift(newHead);
+    if (newHead.x === food.x && newHead.y === food.y) {
+        score += 10;
+        document.getElementById('score').textContent = 'Score: ' + score;
+        placeFood();
     } else {
         snake.pop();
     }
+
+    drawGame();
 }
 
-// Function to check for collisions
-function checkCollision() {
-    const head = snake[0];
+// Start the game
+function startGame() {
+    snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }];
+    direction = 'right';
+    score = 0;
+    document.getElementById('score').textContent = 'Score: 0';
+    document.getElementById('gameOverMessage').style.display = 'none';
 
-    // Check if the snake collides with itself
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-            endGame();
-        }
-    }
-}
-
-// Function to end the game
-function endGame() {
     clearInterval(gameInterval);
-    gameRunning = false;
-    gameOverMessage.style.display = 'block';
-    gameOverMessage.textContent = `Game Over! Your score: ${score}`;
+    gameInterval = setInterval(updateGame, 200);
 
-    if (score > highScore) {
-        highScore = score;
-        document.getElementById('highScore').textContent = `High Score: ${highScore}`;
-    }
-
-    // Hide buttons and show restart options
-    pauseButton.style.display = 'none';
-    continueButton.style.display = 'none';
-    restartButton.style.display = 'block';
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('pauseButton').style.display = 'inline';
 }
 
-// Function to generate food
-function generateFood() {
-    const x = Math.floor(Math.random() * (gameCanvas.width / 10)) * 10;
-    const y = Math.floor(Math.random() * (gameCanvas.height / 10)) * 10;
+// Toggle pause and resume
+function togglePause() {
+    if (isPaused) {
+        gameInterval = setInterval(updateGame, 200);
+        document.getElementById('pauseButton').style.display = 'inline';
+        document.getElementById('continueButton').style.display = 'none';
+    } else {
+        clearInterval(gameInterval);
+        document.getElementById('pauseButton').style.display = 'none';
+        document.getElementById('continueButton').style.display = 'inline';
+    }
+    isPaused = !isPaused;
+}
+
+// Place food at a random location
+function placeFood() {
+    const x = Math.floor(Math.random() * (canvas.width / cellSize)) * cellSize;
+    const y = Math.floor(Math.random() * (canvas.height / cellSize)) * cellSize;
     food = { x, y };
 }
 
-// Function to draw the game
-function drawGame() {
-    context.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+// Event listener for keyboard input
+document.addEventListener('keydown', (e) => {
+    if (isPaused) return;
 
-    // Draw the snake
-    context.fillStyle = 'green';
-    for (let segment of snake) {
-        context.fillRect(segment.x, segment.y, 10, 10);
-    }
-
-    // Draw the food
-    context.fillStyle = 'red';
-    context.fillRect(food.x, food.y, 10, 10);
-
-    // Update score display
-    document.getElementById('score').textContent = `Score: ${score}`;
-}
-
-// Event listener for arrow keys
-document.addEventListener('keydown', (event) => {
-    switch (event.key) {
-        case 'ArrowUp':
-            if (snakeDirection !== 'down') snakeDirection = 'up';
-            break;
-        case 'ArrowDown':
-            if (snakeDirection !== 'up') snakeDirection = 'down';
-            break;
-        case 'ArrowLeft':
-            if (snakeDirection !== 'right') snakeDirection = 'left';
-            break;
-        case 'ArrowRight':
-            if (snakeDirection !== 'left') snakeDirection = 'right';
-            break;
+    switch (e.key) {
+        case 'ArrowUp': if (direction !== 'down') direction = 'up'; break;
+        case 'ArrowDown': if (direction !== 'up') direction = 'down'; break;
+        case 'ArrowLeft': if (direction !== 'right') direction = 'left'; break;
+        case 'ArrowRight': if (direction !== 'left') direction = 'right'; break;
     }
 });
 
-// Event listeners for buttons
-startButton.addEventListener('click', startGame);
-pauseButton.addEventListener('click', () => {
-    clearInterval(gameInterval);
-    gameRunning = false;
-    pauseButton.style.display = 'none';
-    continueButton.style.display = 'block';
-    restartButton.style.display = 'block';
-});
-
-continueButton.addEventListener('click', startGame);
-
-restartButton.addEventListener('click', startGame);
-
-// Event listener for difficulty selection
-difficultySelect.addEventListener('change', (event) => {
-    switch (event.target.value) {
-        case 'easy':
-            currentSpeed = 200;
-            break;
-        case 'medium':
-            currentSpeed = 150;
-            break;
-        case 'hard':
-            currentSpeed = 100;
-            break;
-    }
-});
+// Initial game setup
+startGame();
