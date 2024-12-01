@@ -8,17 +8,27 @@
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" width="300" height="300"></canvas>
-        <div class="controls">
-            <button id="startGameButton">Start Game</button>
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameControls">
+            <button id="startButton">Start Game</button>
             <button id="pauseButton" style="display: none;">Pause</button>
-            <button id="resumeButton" style="display: none;">Resume</button>
-            <button id="newGameButton" style="display: none;">New Game</button>
+            <button id="continueButton" style="display: none;">Continue</button>
+            <button id="restartButton" style="display: none;">Restart</button>
+            <div id="difficultyContainer">
+                <label for="difficultySelect">Difficulty:</label>
+                <select id="difficultySelect">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
         </div>
-        <p id="scoreDisplay">Score: 0</p>
-        <p id="highScoreDisplay">High Score: 0</p>
+        <div id="scoreDisplay">
+            <span id="score">Score: 0</span>
+            <span id="highScore">High Score: 0</span>
+        </div>
+        <div id="gameOverMessage" style="display: none;"></div>
     </div>
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/anime@3.2.1/lib/anime.min.js"></script>
 </body>
 </html>
