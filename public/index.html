@@ -7,34 +7,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="gameContainer">
+    <div id="game-container">
         <canvas id="gameCanvas"></canvas>
-        <div id="scoreBoard">
-            <span id="currentScore">Счёт: 0</span>
-            <span id="highScore">Лучший результат: 0</span>
+        <div id="controls">
+            <button id="startButton">Start Game</button>
+            <button id="pauseButton" style="display:none;">Pause</button>
+            <button id="resumeButton" style="display:none;">Resume</button>
+            <button id="restartButton" style="display:none;">New Game</button>
         </div>
-        <div id="difficultySelector">
-            <label for="difficulty">Сложность:</label>
-            <select id="difficulty">
-                <option value="easy">Лёгкий</option>
-                <option value="medium" selected>Средний</option>
-                <option value="hard">Сложный</option>
-            </select>
+        <div id="score-board">
+            <p>Score: <span id="currentScore">0</span></p>
+            <p>High Score: <span id="highScore">0</span></p>
         </div>
-        <button id="startButton">Начать игру</button>
-        <button id="pauseButton">Пауза</button>
     </div>
-    <div id="gameOverModal">
-        <h2>Игра окончена!</h2>
-        <p id="finalScore"></p>
-        <button id="restartButton">Начать заново</button>
-    </div>
-    <div id="pauseMenu" class="modal">
-    <div class="modal-content">
-        <button id="continueButton">Продолжить</button>
-        <button id="newGameButton">Новая игра</button>
-    </div>
-</div>
     <script src="script.js"></script>
 </body>
 </html>
